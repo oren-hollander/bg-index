@@ -1,0 +1,117 @@
+url: https://youtu.be/8B6cJAGALuE?
+title: UBC 2023 Final, Day 1, Match 3
+date: 2023-12-18
+players:
+  top: Masayuki "Mochy" Mochizuki
+  bottom: Sander Lylloff
+targetScore: 7
+games:
+  - startScore:
+      top: 0
+      bottom: 0
+    events:
+      - kind: start
+        player: bottom
+        timestamp: 3:17:33
+      - kind: double
+        player: bottom
+        timestamp: 3:24:11
+      - kind: drop
+        player: top
+        timestamp: 3:25:47
+  - startScore:
+      top: 0
+      bottom: 1
+    events:
+      - kind: start
+        player: top
+        timestamp: 3:26:04
+      - kind: double
+        player: bottom
+        timestamp: 3:29:32
+      - kind: take
+        player: top
+        timestamp: 3:29:39
+      - kind: double
+        player: top
+        timestamp: 3:34:15
+      - kind: drop
+        player: bottom
+        timestamp: 3:34:17
+  - startScore:
+      top: 2
+      bottom: 1
+    events:
+      - kind: start
+        player: top
+        timestamp: 3:34:46
+      - kind: double
+        player: top
+        timestamp: 3:38:39
+      - kind: take
+        player: bottom
+        timestamp: 3:39:07
+      - kind: double
+        player: bottom
+        timestamp: 3:45:32
+      - kind: drop
+        player: top
+        timestamp: 3:45:44
+  - startScore:
+      top: 2
+      bottom: 3
+    events:
+      - kind: start
+        player: top
+        timestamp: 3:46:13
+      - kind: double
+        player: bottom
+        timestamp: 3:50:19
+      - kind: drop
+        player: top
+        timestamp: 3:51:08
+  - startScore:
+      top: 2
+      bottom: 4
+    events:
+      - kind: start
+        player: top
+        timestamp: 3:51:22
+      - kind: double
+        player: top
+        timestamp: 3:53:11
+      - kind: drop
+        player: bottom
+        timestamp: 3:53:16
+  - startScore:
+      top: 3
+      bottom: 4
+    events:
+      - kind: start
+        player: bottom
+        timestamp: 3:53:34
+      - kind: double
+        player: top
+        timestamp: 3:56:01
+      - kind: take
+        player: bottom
+        timestamp: 3:56:18
+      - kind: win
+        player: bottom
+        timestamp: 4:10:43
+  - startScore:
+      top: 3
+      bottom: 6
+    events:
+      - kind: start
+        player: top
+        timestamp: 4:11:05
+      - kind: win
+        player: bottom
+        timestamp: 4:19:35
+
+
+
+
+
+

@@ -1,0 +1,90 @@
+url: https://youtu.be/8B6cJAGALuE?
+title: UBC 2023 Final, Day 1, Match 2
+date: 2023-12-18
+players:
+  top: Masayuki "Mochy" Mochizuki
+  bottom: Sander Lylloff
+targetScore: 7
+games:
+  - startScore:
+      top: 0
+      bottom: 0
+    events:
+      - kind: start
+        player: top
+        timestamp: 1:58:23
+      - kind: double
+        player: bottom
+        timestamp: 2:04:46
+      - kind: take
+        player: top
+        timestamp: 2:04:46
+      - kind: win
+        player: bottom
+        timestamp: 2:16:56
+  - startScore:
+      top: 0
+      bottom: 2
+    events:
+      - kind: start
+        player: top
+        timestamp: 2:17:20
+      - kind: double
+        player: bottom
+        timestamp: 2:21:50
+      - kind: drop
+        player: top
+        timestamp: 2:22:06
+  - startScore:
+      top: 0
+      bottom: 3
+    events:
+      - kind: start
+        player: top
+        timestamp: 2:22:28
+      - kind: double
+        player: top
+        timestamp: 2:27:54
+      - kind: drop
+        player: bottom
+        timestamp: 2:28:23
+  - startScore:
+      top: 1
+      bottom: 3
+    events:
+      - kind: start
+        player: top
+        timestamp: 2:28:54
+      - kind: double
+        player: bottom
+        timestamp: 2:33:34
+      - kind: drop
+        player: top
+        timestamp: 2:33:45
+  - startScore:
+      top: 1
+      bottom: 4
+    events:
+      - kind: start
+        player: bottom
+        timestamp: 2:34:05
+      - kind: double
+        player: top
+        timestamp: 2:39:37
+      - kind: take
+        player: bottom
+        timestamp: 2:39:45
+      - kind: double
+        player: bottom
+        timestamp: 2:44:53
+      - kind: take
+        player: top
+        timestamp: 2:45:53
+      - kind: win
+        player: bottom
+        timestamp: 2:46:06
+
+
+
+
+

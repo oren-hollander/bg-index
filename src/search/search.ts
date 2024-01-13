@@ -1,5 +1,6 @@
 import { isEqual } from 'lodash/fp'
 import { isString } from 'lodash'
+import { Match, PlayerNames } from '../matches/match.ts'
 
 export type FieldMatcher<FieldType, QueryType = FieldType> = (
   field: FieldType,
@@ -34,14 +35,11 @@ export const dateMatcher = makeQueryMatcher<Date, DateQuery>(
   (date, { from, to }) => date >= from && date <= to
 )
 
-export const playerMatcher = makeQueryMatcher<Players<string>, string>(
+export const playerMatcher = makeQueryMatcher<PlayerNames, string>(
   (players, query) => players.top === query || players.bottom.includes(query)
 )
 
-export const playersMatcher = makeQueryMatcher<
-  Players<string>,
-  [string, string]
->(
+export const playersMatcher = makeQueryMatcher<PlayerNames, [string, string]>(
   (players, query) =>
     isEqual(players, { top: query[0], bottom: query[1] }) ||
     isEqual(players, { top: query[1], bottom: query[0] })
@@ -50,47 +48,6 @@ export const playersMatcher = makeQueryMatcher<
 export const numericMatcher = makeQueryMatcher<number>(
   (number, query) => number === query
 )
-
-interface Players<T> {
-  top: T
-  bottom: T
-}
-
-export interface GameEvent {
-  kind: 'start' | 'double' | 'take' | 'drop' | 'win'
-  player: 'top' | 'bottom'
-  timestamp: number
-}
-
-export interface Game {
-  startScore: Players<number>
-  events: GameEvent[]
-}
-
-export interface Match {
-  url: string
-  title: string
-  date: Date
-  players: Players<string>
-  targetScore: number
-  games: Game[]
-}
-
-export const match = (
-  url: string,
-  title: string,
-  date: Date,
-  players: Players<string>,
-  targetScore: number,
-  games: Game[]
-): Match => ({
-  url,
-  title,
-  date,
-  players,
-  targetScore,
-  games
-})
 
 export interface Query {
   title?: string
