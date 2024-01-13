@@ -1,7 +1,8 @@
 import { FC, useState } from 'react'
-import { Match, Query, search } from './search.ts'
+import { Query, search } from './search.ts'
 import { SearchResults } from './SearchResults.tsx'
 import { matches } from './matches.ts'
+import { Match } from '../matches/match.ts'
 
 export const Search: FC = () => {
   const [title, setTitle] = useState('')

@@ -8,8 +8,38 @@ import {
   ZodType,
   TypeOf
 } from 'zod'
-import { readFile } from 'fs/promises'
-import { parse } from 'yaml'
+import { readFile, writeFile } from 'fs/promises'
+import { parse, stringify } from 'yaml'
+
+export function secondsToTimestamp(seconds: number): string {
+  if (seconds < 60) {
+    return seconds.toString()
+  }
+
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const sec = seconds % 60
+
+  let timeString = ''
+
+  if (hours > 0) {
+    timeString += `${hours}:`
+  }
+
+  if (hours > 0 && minutes < 10) {
+    timeString += `0${minutes}`
+  } else {
+    timeString += `${minutes}`
+  }
+
+  if (sec < 10) {
+    timeString += `:0${sec}`
+  } else {
+    timeString += `:${sec}`
+  }
+
+  return timeString
+}
 
 export const timestampToSeconds = (time: string): number => {
   const parts = time.split(':')
@@ -85,4 +115,18 @@ export const loadFromFile = async (path: string): Promise<Match> => {
   const yaml = await readFile(path, 'utf-8')
   const json = parse(yaml)
   return MatchSchema.parse(json)
+}
+
+export const saveToFile = async (path: string, match: Match): Promise<void> => {
+  const matchJson = {
+    ...match,
+    games: match.games.map(game => ({
+      ...game,
+      events: game.events.map(event => ({
+        ...event,
+        timestamp: secondsToTimestamp(event.timestamp)
+      }))
+    }))
+  }
+  await writeFile(path, stringify(matchJson), 'utf-8')
 }
