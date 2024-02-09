@@ -3,15 +3,19 @@ import { search } from './search'
 import { Match } from '../matches/match.ts'
 
 const match1: Match = {
+  id: 'a',
   url: 'https://example.com/clip1',
   title: 'NY Open',
-  date: new Date('2021-01-01'),
-  players: { top: 'John', bottom: 'Paul' },
+  date: '2021-01-01',
+  players: {
+    top: { full: 'John', short: 'John' },
+    bottom: { full: 'Paul', short: 'Paul' }
+  },
   targetScore: 7,
   games: [
     {
       startScore: { top: 0, bottom: 0 },
-      events: [{ kind: 'start', player: 'top', timestamp: 0 }]
+      events: [{ kind: 'start', player: 'top', timestamp: '00:00' }]
     }
   ]
 }
@@ -26,7 +30,10 @@ describe('Search', () => {
 
     test('should return all match entries', () => {
       const results = search(
-        { title: 'NY', date: { from: match1.date, to: match1.date } },
+        {
+          title: 'NY',
+          date: { from: new Date(match1.date), to: new Date(match1.date) }
+        },
         [match1]
       )
       expect(results).toEqual([match1])
@@ -36,7 +43,10 @@ describe('Search', () => {
   describe('search', () => {
     test('should match by stream and date', () => {
       const results = search(
-        { title: 'NY', date: { from: match1.date, to: match1.date } },
+        {
+          title: 'NY',
+          date: { from: new Date(match1.date), to: new Date(match1.date) }
+        },
         [match1]
       )
 
