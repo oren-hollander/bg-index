@@ -7,6 +7,7 @@ function App() {
   const route = router.useRoute(['Home', 'Match', 'Capture'])
 
   switch (route?.name) {
+    case undefined:
     case 'Home':
       return <Search />
     case 'Match':
