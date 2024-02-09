@@ -25,7 +25,7 @@ export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
         </Thead>
         <Tbody>
           {matches.map(match => (
-            <Tr onClick={() => show(match.id)} cursor="pointer">
+            <Tr key={match.id} onClick={() => show(match.id)} cursor="pointer">
               <Td>{match.title}</Td>
               <Td>{match.date}</Td>
               <Td>

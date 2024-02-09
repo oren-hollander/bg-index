@@ -5,7 +5,7 @@ import {
   Players,
   timestampToSeconds
 } from '../matches/match.ts'
-import ReactPlayer from 'react-player'
+import ReactPlayer from 'react-player/youtube'
 import {
   Box,
   Button,
@@ -49,7 +49,7 @@ interface ViewerProps {
 export const Viewer: FC<ViewerProps> = ({ matchId }) => {
   const match = matches.get(matchId)!
   const playerRef = useRef<ReactPlayer>(null)
-  const [playing, setPlaying] = useState(false)
+  const [playing, setPlaying] = useState(true)
   const { isOpen, onOpen, onClose } = useDisclosure()
 
   const jump = (timestamp: string) => () => {
@@ -57,6 +57,13 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
     playerRef.current?.seekTo(seconds, 'seconds')
     onClose()
     setPlaying(true)
+  }
+
+  const start = () => {
+    playerRef.current?.seekTo(
+      timestampToSeconds(match.games[0].events[0].timestamp),
+      'seconds'
+    )
   }
 
   return (
@@ -112,6 +119,7 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
                     <Tbody>
                       {game.events.map(event => (
                         <Tr
+                          key={`${event.kind}-${event.timestamp}`}
                           onClick={jump(event.timestamp)}
                           cursor="pointer"
                           color="yellow.200"
@@ -141,6 +149,7 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
             height="100%"
             ref={playerRef}
             playing={playing}
+            onStart={start}
             url={match.url}
             controls={true}
           />
