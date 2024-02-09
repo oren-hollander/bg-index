@@ -1,5 +1,6 @@
 import { test, expect, describe } from 'vitest'
-import { Match, search } from './search'
+import { search } from './search'
+import { Match } from '../matches/match.ts'
 
 const match1: Match = {
   url: 'https://example.com/clip1',

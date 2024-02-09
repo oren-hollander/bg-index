@@ -1,4 +1,4 @@
-import { FC, useRef, useState } from 'react'
+import { FC, useEffect, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { once } from 'lodash/fp'
 
@@ -9,17 +9,22 @@ interface VideoPreviewProps {
 
 export const VideoPreview: FC<VideoPreviewProps> = ({ url, timestamp }) => {
   const player = useRef<ReactPlayer>(null)
-  const [playing, setPlaying] = useState(false)
+  const [playing, setPlaying] = useState(true)
 
   const reset = () => {
     player.current?.seekTo(timestamp, 'seconds')
-    setPlaying(true)
+    setPlaying(false)
   }
+
+  useEffect(() => {
+    player.current?.seekTo(timestamp, 'seconds')
+    setPlaying(false)
+  }, [url, timestamp])
 
   return (
     <ReactPlayer
-      width={1200}
-      height={800}
+      width="100%"
+      // height="100%"
       ref={player}
       muted={true}
       playing={playing}

@@ -36,7 +36,9 @@ export const dateMatcher = makeQueryMatcher<Date, DateQuery>(
 )
 
 export const playerMatcher = makeQueryMatcher<PlayerNames, string>(
-  (players, query) => players.top === query || players.bottom.includes(query)
+  (players, query) =>
+    players.top.full.toLowerCase().includes(query.toLowerCase()) ||
+    players.bottom.full.toLowerCase().includes(query.toLowerCase())
 )
 
 export const playersMatcher = makeQueryMatcher<PlayerNames, [string, string]>(
@@ -61,7 +63,7 @@ export const search = (query: Query, entries: Match[]): Match[] => {
 
   for (const entry of entries) {
     const titleMatched = textMatcher(entry.title, query.title)
-    const dateMatched = dateMatcher(entry.date, query.date)
+    const dateMatched = dateMatcher(new Date(entry.date), query.date)
 
     const playersMatched = isString(query.players)
       ? playerMatcher(entry.players, query.players)

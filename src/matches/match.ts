@@ -1,16 +1,3 @@
-import {
-  record,
-  union,
-  literal,
-  string,
-  number,
-  object,
-  ZodType,
-  TypeOf
-} from 'zod'
-import { readFile, writeFile } from 'fs/promises'
-import { parse, stringify } from 'yaml'
-
 export function secondsToTimestamp(seconds: number): string {
   if (seconds < 60) {
     return seconds.toString()
@@ -59,74 +46,41 @@ export const timestampToSeconds = (time: string): number => {
   }
 }
 
-const PlayerSchema = union([literal('top'), literal('bottom')])
+export type Players<T> = Record<'top' | 'bottom', T>
 
-const PlayersSchema = (t: ZodType) => record(PlayerSchema, t)
-const PlayerNamesSchema = PlayersSchema(string())
-const PlayerScoresSchema = PlayersSchema(number())
-
-const GameEventSchema = object({
-  kind: union([
-    literal('start'),
-    literal('double'),
-    literal('take'),
-    literal('drop'),
-    literal('win')
-  ]),
-  player: union([literal('top'), literal('bottom')]),
-  timestamp: string().transform(x => timestampToSeconds(x))
-})
-
-const GameSchema = object({
-  startScore: PlayerScoresSchema,
-  events: GameEventSchema.array()
-})
-
-const MatchSchema = object({
-  url: string(),
-  title: string(),
-  date: string().transform(s => new Date(s)),
-  players: PlayerNamesSchema,
-  targetScore: number(),
-  games: GameSchema.array()
-})
-
-export type Match = TypeOf<typeof MatchSchema>
-export type PlayerNames = TypeOf<typeof PlayerNamesSchema>
-type Game = TypeOf<typeof GameSchema>
-
-export const match = (
-  url: string,
-  title: string,
-  date: Date,
-  players: PlayerNames,
-  targetScore: number,
-  games: Game[]
-): Match => ({
-  url,
-  title,
-  date,
-  players,
-  targetScore,
-  games
-})
-
-export const loadFromFile = async (path: string): Promise<Match> => {
-  const yaml = await readFile(path, 'utf-8')
-  const json = parse(yaml)
-  return MatchSchema.parse(json)
+export interface Name {
+  full: string
+  short: string
 }
 
-export const saveToFile = async (path: string, match: Match): Promise<void> => {
-  const matchJson = {
-    ...match,
-    games: match.games.map(game => ({
-      ...game,
-      events: game.events.map(event => ({
-        ...event,
-        timestamp: secondsToTimestamp(event.timestamp)
-      }))
-    }))
-  }
-  await writeFile(path, stringify(matchJson), 'utf-8')
+export interface PlayerNames {
+  top: Name
+  bottom: Name
+}
+
+interface PlayerScores {
+  top: number
+  bottom: number
+}
+
+export interface Game {
+  startScore: PlayerScores
+  events: GameEvent[]
+}
+
+export type EventKind = 'start' | 'double' | 'take' | 'drop' | 'win'
+export interface GameEvent {
+  kind: EventKind
+  player: 'top' | 'bottom'
+  timestamp: string
+}
+
+export interface Match {
+  id: string
+  url: string
+  title: string
+  date: string
+  players: PlayerNames
+  targetScore: number
+  games: Game[]
 }

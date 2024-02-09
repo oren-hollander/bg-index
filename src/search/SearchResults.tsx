@@ -1,70 +1,41 @@
-import { FC, useState } from 'react'
-import { Game, GameEvent, Match } from './search.ts'
-import { VideoPreview } from '../VideoPreview.tsx'
-
-interface SearchResultProps {
-  match: Match
-  game: Game
-  event: GameEvent
-  onSelect(): void
-}
-
-const SearchResult: FC<SearchResultProps> = ({
-  match,
-  game,
-  event,
-  onSelect
-}) => {
-  const score = `${match.players.top}: ${game.startScore.top}, ${match.players.bottom}: ${game.startScore.bottom}`
-  const getPlayerName = (player: 'top' | 'bottom') => {
-    return match.players[player]
-  }
-
-  return (
-    <div onClick={onSelect}>
-      <span>{match.title}</span>
-      <span>Score: {score}</span>
-      <span>
-        {getPlayerName(event.player)}: {event.kind}
-      </span>
-    </div>
-  )
-}
+import { FC } from 'react'
+import { Match } from '../matches/match.ts'
+import { Box, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
+import { gray, white } from '../colors.ts'
+import { router } from '../router.ts'
 
 interface SearchResultsProps {
   matches: Match[]
 }
 
 export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
-  const [selectedMatch, setSelectedMatch] = useState<Match>()
-  const [selectedEvent, setSelectedEvent] = useState<GameEvent>()
-
-  const select = (match: Match, event: GameEvent) => {
-    setSelectedMatch(match)
-    setSelectedEvent(event)
+  const show = (matchId: string) => {
+    router.push('Match', { matchId })
   }
 
   return (
-    <>
-      {matches.flatMap(match =>
-        match.games.flatMap(game =>
-          game.events.map(event => (
-            <SearchResult
-              match={match}
-              game={game}
-              event={event}
-              onSelect={() => select(match, event)}
-            />
-          ))
-        )
-      )}
-
-      {selectedMatch && selectedEvent && (
-        <VideoPreview
-          url={selectedMatch.url}
-          timestamp={selectedEvent.timestamp}
-        />
-      )}
-    </>
+    <Box bg={gray}>
+      <Table color={white}>
+        <Thead>
+          <Tr>
+            <Th color={white}>Title</Th>
+            <Th color={white}>Date</Th>
+            <Th color={white}>Event</Th>
+          </Tr>
+        </Thead>
+        <Tbody>
+          {matches.map(match => (
+            <Tr onClick={() => show(match.id)} cursor="pointer">
+              <Td>{match.title}</Td>
+              <Td>{match.date}</Td>
+              <Td>
+                {match.players.top.full} vs. {match.players.bottom.full}, match
+                to {match.targetScore}
+              </Td>
+            </Tr>
+          ))}
+        </Tbody>
+      </Table>
+    </Box>
   )
 }
