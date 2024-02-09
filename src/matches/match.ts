@@ -5,7 +5,7 @@ export function secondsToTimestamp(seconds: number): string {
 
   const hours = Math.floor(seconds / 3600)
   const minutes = Math.floor((seconds % 3600) / 60)
-  const sec = seconds % 60
+  const sec = Math.floor(seconds % 60)
 
   let timeString = ''
 
@@ -58,7 +58,7 @@ export interface PlayerNames {
   bottom: Name
 }
 
-interface PlayerScores {
+export interface PlayerScores {
   top: number
   bottom: number
 }
@@ -69,6 +69,7 @@ export interface Game {
 }
 
 export type EventKind = 'start' | 'double' | 'take' | 'drop' | 'win'
+
 export interface GameEvent {
   kind: EventKind
   player: 'top' | 'bottom'
