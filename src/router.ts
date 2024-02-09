@@ -1,7 +1,7 @@
 import { createRouter } from '@swan-io/chicane'
 
 export const router = createRouter({
-  Home: '/',
-  Match: '/matches/:matchId',
-  Capture: '/capture'
+  Home: '/bg-index/',
+  Match: '/bg-index/matches/:matchId',
+  Capture: '/bg-index/capture'
 })
