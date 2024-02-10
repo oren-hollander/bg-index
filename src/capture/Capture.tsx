@@ -24,7 +24,8 @@ import {
   Text,
   Th,
   Thead,
-  Tr
+  Tr,
+  useClipboard
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import {
@@ -104,7 +105,9 @@ export const Capture: FC = () => {
       title !== '' &&
       date !== '' &&
       topPlayer !== '' &&
+      topPlayerShortName !== '' &&
       bottomPlayer !== '' &&
+      bottomPlayerShortName !== '' &&
       !Number.isNaN(targetScoreValue) &&
       targetScoreValue > 0
     )
@@ -134,27 +137,36 @@ export const Capture: FC = () => {
   const canWin = (): boolean =>
     lastEvent?.kind === 'start' || lastEvent?.kind === 'take'
 
+  const { onCopy } = useClipboard(JSON.stringify(exprtedMatch ?? {}, null, 2))
+
   return (
     <Flex direction="row" bg={gray} h="100vh" w="100vw">
-      <Box flex="3">
-        {exprtedMatch === undefined && captureUrl !== '' && (
-          <ReactPlayer
-            width="100%"
-            height="100vh"
-            ref={playerRef}
-            onProgress={setClipProgress}
-            url={captureUrl}
-            controls={true}
-          />
-        )}
-        {exprtedMatch && (
+      {!exprtedMatch && (
+        <Box flex="3">
+          {captureUrl !== '' && (
+            <ReactPlayer
+              width="100%"
+              height="100vh"
+              ref={playerRef}
+              onProgress={setClipProgress}
+              url={captureUrl}
+              controls={true}
+            />
+          )}
+        </Box>
+      )}
+      {exprtedMatch && (
+        <Box flex="3" height="100vh" overflowY="auto">
+          <Button size="sm" m="0.5em" colorScheme="green" onClick={onCopy}>
+            Copy
+          </Button>
           <pre>
-            <Code m="1em" bg={'gray.800'} color={white}>
+            <Code m="1em" bg={gray} color={white}>
               {JSON.stringify(exprtedMatch, null, 2)}
             </Code>
           </pre>
-        )}
-      </Box>
+        </Box>
+      )}
 
       <Box
         flex={1}
