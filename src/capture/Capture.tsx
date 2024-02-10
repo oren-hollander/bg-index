@@ -35,7 +35,7 @@ import {
   SmallCloseIcon
 } from '@chakra-ui/icons'
 import { DoubleIcon, StartIcon } from './icons.tsx'
-import { initial } from 'lodash/fp'
+import { filter, sortBy } from 'lodash/fp'
 import { exportMatch } from './export.ts'
 
 const StateInput: FC<
@@ -68,11 +68,12 @@ export const Capture: FC = () => {
   const [scores, setScores] = useState<PlayerScores[]>([])
 
   const [playerTurn, setPlayerTurn] = useState<'top' | 'bottom'>('top')
-  const [exprtedMatch, setExportedMatch] = useState<Match>()
+  const [exportedMatch, setExportedMatch] = useState<Match>()
 
-  const deleteLastEvent = () => {
-    setEvents(events => initial(events))
+  const deleteEvent = (event: GameEvent) => {
+    setEvents(events => filter(e => e !== event, events))
   }
+
   const setClipProgress = (state: OnProgressProps) => {
     setProgress(state.playedSeconds)
   }
@@ -82,10 +83,15 @@ export const Capture: FC = () => {
   }
 
   const addEvent = (kind: EventKind) => () => {
-    setEvents(events => [
-      ...events,
-      { kind, player: playerTurn, timestamp: secondsToTimestamp(progress) }
-    ])
+    setEvents(events =>
+      sortBy(
+        event => event.timestamp,
+        [
+          ...events,
+          { kind, player: playerTurn, timestamp: secondsToTimestamp(progress) }
+        ]
+      )
+    )
 
     if (kind === 'double') {
       setPlayerTurn(playerTurn === 'top' ? 'bottom' : 'top')
@@ -113,35 +119,11 @@ export const Capture: FC = () => {
     )
   }
 
-  const lastEvent = events[events.length - 1]
-
-  const canStart = (): boolean => {
-    const scoreExists =
-      topPlayerScore !== '' &&
-      parseInt(topPlayerScore) >= 0 &&
-      bottomPlayerScore !== '' &&
-      parseInt(bottomPlayerScore) >= 0
-
-    return (
-      (lastEvent === undefined ||
-        lastEvent.kind === 'win' ||
-        lastEvent.kind === 'drop') &&
-      scoreExists
-    )
-  }
-  const canDouble = (): boolean =>
-    lastEvent?.kind === 'start' || lastEvent?.kind === 'take'
-
-  const canTake = (): boolean => lastEvent?.kind === 'double'
-  const canDrop = (): boolean => lastEvent?.kind === 'double'
-  const canWin = (): boolean =>
-    lastEvent?.kind === 'start' || lastEvent?.kind === 'take'
-
-  const { onCopy } = useClipboard(JSON.stringify(exprtedMatch ?? {}, null, 2))
+  const { onCopy } = useClipboard(JSON.stringify(exportedMatch ?? {}, null, 2))
 
   return (
     <Flex direction="row" bg={gray} h="100vh" w="100vw">
-      {!exprtedMatch && (
+      {!exportedMatch && (
         <Box flex="3">
           {captureUrl !== '' && (
             <ReactPlayer
@@ -155,14 +137,14 @@ export const Capture: FC = () => {
           )}
         </Box>
       )}
-      {exprtedMatch && (
+      {exportedMatch && (
         <Box flex="3" height="100vh" overflowY="auto">
           <Button size="sm" m="0.5em" colorScheme="green" onClick={onCopy}>
             Copy
           </Button>
           <pre>
             <Code m="1em" bg={gray} color={white}>
-              {JSON.stringify(exprtedMatch, null, 2)}
+              {JSON.stringify(exportedMatch, null, 2)}
             </Code>
           </pre>
         </Box>
@@ -255,35 +237,30 @@ export const Capture: FC = () => {
               colorScheme="green"
             >
               <IconButton
-                isDisabled={!canStart()}
                 isRound
                 aria-label="Start"
                 icon={<StartIcon />}
                 onClick={addEvent('start')}
               />
               <IconButton
-                isDisabled={!canDouble()}
                 isRound
                 aria-label="Double"
                 icon={<DoubleIcon />}
                 onClick={addEvent('double')}
               />
               <IconButton
-                isDisabled={!canTake()}
                 isRound
                 aria-label="Take"
                 icon={<CheckIcon />}
                 onClick={addEvent('take')}
               />
               <IconButton
-                isDisabled={!canDrop()}
                 isRound
                 aria-label="Drop"
                 icon={<CloseIcon />}
                 onClick={addEvent('drop')}
               />
               <IconButton
-                isDisabled={!canWin()}
                 isRound
                 aria-label="Win"
                 icon={<CheckCircleIcon />}
@@ -379,7 +356,7 @@ export const Capture: FC = () => {
                 </Tr>
               </Thead>
               <Tbody>
-                {events.map((event, i) => (
+                {events.map(event => (
                   <Tr key={`${event.kind}-${event.timestamp}`}>
                     <Td>
                       {event.player === 'top'
@@ -390,13 +367,12 @@ export const Capture: FC = () => {
                     <Td>{event.timestamp}</Td>
                     <Td>
                       <IconButton
-                        isDisabled={i !== events.length - 1}
                         size="xxs"
                         variant="outline"
                         color="red.300"
                         aria-label="Remove"
                         icon={<SmallCloseIcon />}
-                        onClick={deleteLastEvent}
+                        onClick={() => deleteEvent(event)}
                       />
                     </Td>
                   </Tr>
