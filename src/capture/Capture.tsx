@@ -1,10 +1,8 @@
 import { Dispatch, FC, SetStateAction, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { OnProgressProps } from 'react-player/base'
-import { v4 as uuid } from 'uuid'
 import {
   EventKind,
-  Game,
   GameEvent,
   Match,
   PlayerScores,
@@ -37,6 +35,7 @@ import {
 } from '@chakra-ui/icons'
 import { DoubleIcon, StartIcon } from './icons.tsx'
 import { initial } from 'lodash/fp'
+import { exportMatch } from './export.ts'
 
 const StateInput: FC<
   InputProps & {
@@ -135,52 +134,26 @@ export const Capture: FC = () => {
   const canWin = (): boolean =>
     lastEvent?.kind === 'start' || lastEvent?.kind === 'take'
 
-  const exportMatch = () => {
-    const gameScores = [...scores]
-    const games: Game[] = []
-    let startScore: PlayerScores | undefined = undefined
-
-    for (const event of events) {
-      switch (event.kind) {
-        case 'start':
-          startScore = gameScores.shift()!
-          break
-        case 'drop':
-        case 'win':
-          games.push({
-            startScore: startScore!,
-            events
-          })
-          break
-      }
-    }
-
-    const exportedMatch: Match = {
-      id: uuid(),
-      url,
-      title,
-      date,
-      players: {
-        top: { full: topPlayer, short: topPlayerShortName },
-        bottom: { full: bottomPlayer, short: bottomPlayerShortName }
-      },
-      targetScore: Number.parseInt(targetScore),
-      games
-    }
-    setExportedMatch(exportedMatch)
-  }
-
   return (
     <Flex direction="row" bg={gray} h="100vh" w="100vw">
       <Box flex="3">
-        <ReactPlayer
-          width="100wh"
-          height="100vh"
-          ref={playerRef}
-          onProgress={setClipProgress}
-          url={captureUrl}
-          controls={true}
-        />
+        {exprtedMatch === undefined && captureUrl !== '' && (
+          <ReactPlayer
+            width="100%"
+            height="100vh"
+            ref={playerRef}
+            onProgress={setClipProgress}
+            url={captureUrl}
+            controls={true}
+          />
+        )}
+        {exprtedMatch && (
+          <pre>
+            <Code m="1em" bg={'gray.800'} color={white}>
+              {JSON.stringify(exprtedMatch, null, 2)}
+            </Code>
+          </pre>
+        )}
       </Box>
 
       <Box
@@ -262,155 +235,164 @@ export const Capture: FC = () => {
           </Box>
         )}
 
-        {exprtedMatch === undefined && captureUrl !== '' && (
-          <>
-            <Center mt={4}>
-              <ButtonGroup
-                isDisabled={captureUrl === ''}
-                marginStart={4}
-                colorScheme="green"
-              >
-                <IconButton
-                  isDisabled={!canStart()}
-                  isRound
-                  aria-label="Start"
-                  icon={<StartIcon />}
-                  onClick={addEvent('start')}
-                />
-                <IconButton
-                  isDisabled={!canDouble()}
-                  isRound
-                  aria-label="Double"
-                  icon={<DoubleIcon />}
-                  onClick={addEvent('double')}
-                />
-                <IconButton
-                  isDisabled={!canTake()}
-                  isRound
-                  aria-label="Take"
-                  icon={<CheckIcon />}
-                  onClick={addEvent('take')}
-                />
-                <IconButton
-                  isDisabled={!canDrop()}
-                  isRound
-                  aria-label="Drop"
-                  icon={<CloseIcon />}
-                  onClick={addEvent('drop')}
-                />
-                <IconButton
-                  isDisabled={!canWin()}
-                  isRound
-                  aria-label="Win"
-                  icon={<CheckCircleIcon />}
-                  onClick={addEvent('win')}
-                />
-              </ButtonGroup>
-            </Center>
-
-            <Center>
-              <ButtonGroup
-                mt={4}
-                isDisabled={captureUrl === ''}
-                size="sm"
-                isAttached
-                colorScheme="green"
-                variant="outline"
-              >
-                <Button
-                  w="7em"
-                  variant={playerTurn === 'top' ? 'solid' : 'outline'}
-                  onClick={() => setPlayerTurn('top')}
-                >
-                  {topPlayerShortName}
-                </Button>
-                <Button
-                  w="7em"
-                  variant={playerTurn === 'bottom' ? 'solid' : 'outline'}
-                  onClick={() => setPlayerTurn('bottom')}
-                >
-                  {bottomPlayerShortName}
-                </Button>
-              </ButtonGroup>
-            </Center>
-
-            <Center>
-              <Text mt={4}>Score</Text>
-            </Center>
-
-            <Center>
-              <StateInput
-                me={1}
-                w="3em"
-                type="number"
-                value={topPlayerScore}
-                dispatch={setTopPlayerScore}
+        <>
+          <Center mt={4}>
+            <ButtonGroup
+              isDisabled={captureUrl === ''}
+              marginStart={4}
+              colorScheme="green"
+            >
+              <IconButton
+                isDisabled={!canStart()}
+                isRound
+                aria-label="Start"
+                icon={<StartIcon />}
+                onClick={addEvent('start')}
               />
-              <StateInput
-                ms={1}
-                w="3em"
-                type="number"
-                value={bottomPlayerScore}
-                dispatch={setBottomPlayerScore}
+              <IconButton
+                isDisabled={!canDouble()}
+                isRound
+                aria-label="Double"
+                icon={<DoubleIcon />}
+                onClick={addEvent('double')}
               />
-            </Center>
+              <IconButton
+                isDisabled={!canTake()}
+                isRound
+                aria-label="Take"
+                icon={<CheckIcon />}
+                onClick={addEvent('take')}
+              />
+              <IconButton
+                isDisabled={!canDrop()}
+                isRound
+                aria-label="Drop"
+                icon={<CloseIcon />}
+                onClick={addEvent('drop')}
+              />
+              <IconButton
+                isDisabled={!canWin()}
+                isRound
+                aria-label="Win"
+                icon={<CheckCircleIcon />}
+                onClick={addEvent('win')}
+              />
+            </ButtonGroup>
+          </Center>
 
-            <Box mt={4}>
-              <Button colorScheme="blue" onClick={exportMatch}>
-                Export
+          <Center>
+            <ButtonGroup
+              mt={4}
+              isDisabled={captureUrl === ''}
+              size="sm"
+              isAttached
+              colorScheme="green"
+              variant="outline"
+            >
+              <Button
+                w="7em"
+                variant={playerTurn === 'top' ? 'solid' : 'outline'}
+                onClick={() => setPlayerTurn('top')}
+              >
+                {topPlayerShortName}
               </Button>
-            </Box>
+              <Button
+                w="7em"
+                variant={playerTurn === 'bottom' ? 'solid' : 'outline'}
+                onClick={() => setPlayerTurn('bottom')}
+              >
+                {bottomPlayerShortName}
+              </Button>
+            </ButtonGroup>
+          </Center>
 
-            <Box color={white}>
-              <Table>
-                <Thead>
-                  <Tr>
-                    <Th color={white}>Player</Th>
-                    <Th color={white}>Action</Th>
-                    <Th color={white}>Time</Th>
-                    <Th color={white}>
-                      <SmallCloseIcon />
-                    </Th>
-                  </Tr>
-                </Thead>
-                <Tbody>
-                  {events.map((event, i) => (
-                    <Tr key={`${event.kind}-${event.timestamp}`}>
-                      <Td>
-                        {event.player === 'top'
-                          ? topPlayerShortName
-                          : bottomPlayerShortName}
-                      </Td>
-                      <Td>{event.kind}</Td>
-                      <Td>{event.timestamp}</Td>
-                      <Td>
-                        <IconButton
-                          isDisabled={i !== events.length - 1}
-                          size="xxs"
-                          variant="outline"
-                          color="red.300"
-                          aria-label="Remove"
-                          icon={<SmallCloseIcon />}
-                          onClick={deleteLastEvent}
-                        />
-                      </Td>
-                    </Tr>
-                  ))}
-                </Tbody>
-              </Table>
-            </Box>
-          </>
-        )}
+          <Center>
+            <Text mt={4}>Score</Text>
+          </Center>
 
-        {exprtedMatch && (
-          <Box bg={gray}>
-            <pre>
-              <Code bg={'gray.800'} color={white}>
-                {JSON.stringify(exprtedMatch, null, 2)}
-              </Code>
-            </pre>
+          <Center>
+            <StateInput
+              me={1}
+              w="3em"
+              type="number"
+              value={topPlayerScore}
+              dispatch={setTopPlayerScore}
+            />
+            <StateInput
+              ms={1}
+              w="3em"
+              type="number"
+              value={bottomPlayerScore}
+              dispatch={setBottomPlayerScore}
+            />
+          </Center>
+
+          <Box mt={4}>
+            <Button
+              colorScheme="blue"
+              onClick={() => {
+                setExportedMatch(
+                  exportMatch(
+                    url,
+                    title,
+                    date,
+                    Number.parseInt(targetScore),
+                    [...scores],
+                    events,
+                    {
+                      top: { full: topPlayer, short: topPlayerShortName },
+                      bottom: {
+                        full: bottomPlayer,
+                        short: bottomPlayerShortName
+                      }
+                    }
+                  )
+                )
+              }}
+            >
+              Export
+            </Button>
           </Box>
-        )}
+
+          <Box color={white}>
+            <Table>
+              <Thead>
+                <Tr>
+                  <Th color={white}>Player</Th>
+                  <Th color={white}>Action</Th>
+                  <Th color={white}>Time</Th>
+                  <Th color={white}>
+                    <SmallCloseIcon />
+                  </Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {events.map((event, i) => (
+                  <Tr key={`${event.kind}-${event.timestamp}`}>
+                    <Td>
+                      {event.player === 'top'
+                        ? topPlayerShortName
+                        : bottomPlayerShortName}
+                    </Td>
+                    <Td>{event.kind}</Td>
+                    <Td>{event.timestamp}</Td>
+                    <Td>
+                      <IconButton
+                        isDisabled={i !== events.length - 1}
+                        size="xxs"
+                        variant="outline"
+                        color="red.300"
+                        aria-label="Remove"
+                        icon={<SmallCloseIcon />}
+                        onClick={deleteLastEvent}
+                      />
+                    </Td>
+                  </Tr>
+                ))}
+              </Tbody>
+            </Table>
+          </Box>
+        </>
       </Box>
     </Flex>
   )
