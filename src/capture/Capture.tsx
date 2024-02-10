@@ -48,7 +48,7 @@ const StateInput: FC<
 
 export const Capture: FC = () => {
   const playerRef = useRef<ReactPlayer>(null)
-  const [url, setUrl] = useState('https://www.youtube.com/watch?v=8B6cJAGALuE')
+  const [url, setUrl] = useState('')
 
   const [captureUrl, setCaptureUrl] = useState<string>('')
 
