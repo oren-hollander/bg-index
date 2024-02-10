@@ -21,7 +21,6 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
   const match = matches.get(matchId)!
   const playerRef = useRef<ReactPlayer>(null)
   const [playing, setPlaying] = useState(true)
-  const spoilerProtectionState = useState(true)
 
   const eventsDisclosure = useDisclosure()
 
@@ -61,12 +60,7 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
         </Flex>
       </Box>
 
-      <Events
-        match={match}
-        disclosure={eventsDisclosure}
-        spoilerProtectionState={spoilerProtectionState}
-        jump={jump}
-      />
+      <Events match={match} disclosure={eventsDisclosure} jump={jump} />
 
       <Flex flex="1" bg={gray}>
         <Box flex="1">

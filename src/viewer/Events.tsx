@@ -1,4 +1,4 @@
-import { FC, Dispatch, SetStateAction } from 'react'
+import { FC, useState } from 'react'
 import {
   Box,
   Drawer,
@@ -7,7 +7,6 @@ import {
   DrawerContent,
   DrawerOverlay,
   FormControl,
-  UseDisclosureReturn,
   FormLabel,
   Switch,
   Table,
@@ -17,29 +16,33 @@ import {
   Text,
   Th,
   Thead,
-  Tr
+  Tr,
+  UseDisclosureReturn
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { EventKind, Match } from '../matches/match.ts'
+import { EventKind, GameEvent, Match } from '../matches/match.ts'
 import { Score } from './Score.tsx'
+import { take } from 'lodash/fp'
 
 const getEventText = (kind: EventKind): string => `${kind}s`
-
-export type State<T> = [T, Dispatch<SetStateAction<T>>]
 
 interface EventsProps {
   match: Match
   disclosure: UseDisclosureReturn
-  spoilerProtectionState: State<boolean>
   jump(timestamp: string): void
 }
 
-export const Events: FC<EventsProps> = ({
-  match,
-  disclosure,
-  spoilerProtectionState: [spoilerProtection, setSpoilerProtection],
-  jump
-}) => {
+export const Events: FC<EventsProps> = ({ match, disclosure, jump }) => {
+  const [spoilerProtection, setSpoilerProtection] = useState(true)
+
+  const getGameEvents = (events: GameEvent[]): GameEvent[] => {
+    if (spoilerProtection) {
+      return take(1, events)
+    } else {
+      return events
+    }
+  }
+
   return (
     <Drawer
       isOpen={disclosure.isOpen}
@@ -67,7 +70,9 @@ export const Events: FC<EventsProps> = ({
               marginTop={5}
             >
               <Text fontSize="xl">Game #{i + 1}</Text>
-              <Score scores={game.startScore} names={match.players} />
+              {!spoilerProtection && (
+                <Score scores={game.startScore} names={match.players} />
+              )}
               <TableContainer marginTop={3}>
                 <Table size="sm">
                   <Thead>
@@ -85,7 +90,7 @@ export const Events: FC<EventsProps> = ({
                     </Tr>
                   </Thead>
                   <Tbody>
-                    {game.events.map(event => (
+                    {getGameEvents(game.events).map(event => (
                       <Tr
                         key={`${event.kind}-${event.timestamp}`}
                         onClick={() => {
