@@ -1,7 +1,7 @@
 import { Game, GameEvent, Match, PlayerNames } from '../matches/match.ts'
 import { v4 as uuid } from 'uuid'
 
-export const exportMatch = (
+export const getExportedMatch = (
   url: string,
   stream: string,
   title: string,
