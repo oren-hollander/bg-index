@@ -1,4 +1,4 @@
-import { isEqual, isString, orderBy } from 'lodash/fp'
+import { isString, orderBy } from 'lodash/fp'
 import { Match, PlayerNames } from '../matches/match.ts'
 
 export type FieldMatcher<FieldType, QueryType = FieldType> = (
@@ -41,9 +41,14 @@ export const playerMatcher = makeQueryMatcher<PlayerNames, string>(
 )
 
 export const playersMatcher = makeQueryMatcher<PlayerNames, [string, string]>(
-  (players, query) =>
-    isEqual(players, { top: query[0], bottom: query[1] }) ||
-    isEqual(players, { top: query[1], bottom: query[0] })
+  (players, query) => {
+    return (
+      (players.top.full.toLowerCase().includes(query[0].toLowerCase()) &&
+        players.bottom.full.toLowerCase().includes(query[1].toLowerCase())) ||
+      (players.top.full.toLowerCase().includes(query[1].toLowerCase()) &&
+        players.bottom.full.toLowerCase().includes(query[0].toLowerCase()))
+    )
+  }
 )
 
 export const numericMatcher = makeQueryMatcher<number>(

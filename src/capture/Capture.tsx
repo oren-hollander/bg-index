@@ -9,7 +9,7 @@ import {
 } from '../matches/match.ts'
 import { Box, Button, Code, Flex, useClipboard } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { filter, sortBy } from 'lodash/fp'
+import { filter, omit, sortBy } from 'lodash/fp'
 import { MatchDetails } from './MatchDetails.tsx'
 import { CaptureControls } from './CaptureControls.tsx'
 import { getExportedMatch } from './export.ts'
@@ -68,15 +68,16 @@ export const Capture: FC = () => {
           return 6
       }
     }
-    setEvents(events =>
-      sortBy(
-        event => [
-          timestampToSeconds(event.timestamp),
-          getEventKindOrder(event.kind)
-        ],
-        [...events, event]
-      )
-    )
+    setEvents(events => {
+      const es = [...events, event].map(e => ({
+        ...e,
+        s: timestampToSeconds(event.timestamp),
+        k: getEventKindOrder(event.kind)
+      }))
+
+      const es2 = sortBy(['s', 'k'], es)
+      return es2.map(e => omit(['s', 'k'], e)) as GameEvent[]
+    })
 
     if (event.kind === 'double') {
       setPlayerTurn(playerTurn === 'top' ? 'bottom' : 'top')

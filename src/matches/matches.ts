@@ -8,8 +8,18 @@ import match6 from './files/UBC 2023/ubc 2023 finals day 1 match 4.json'
 import match7 from './files/UBC 2023/ubc 2023 finals day 2 match 5.json'
 import match4 from './files/USA UBC 2024/group-a-round-1-woosley-sahlen.json'
 import match5 from './files/USA UBC 2024/group-b-round-1-ohagan-frigo.json'
+import match8 from './files/USA UBC 2024/group-a-round-4-nazarian-woosley.json'
 
-const matchJsons = [match1, match2, match3, match4, match5, match6, match7]
+const matchJsons = [
+  match1,
+  match2,
+  match3,
+  match4,
+  match5,
+  match6,
+  match7,
+  match8
+]
 const matchList = matchJsons.map(json => MatchSchema.parse(json))
 
 export const matches = new Map<string, Match>(

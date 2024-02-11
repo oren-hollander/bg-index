@@ -91,9 +91,12 @@ export const Search: FC = () => {
               onChange={e => setPlayer2(e.target.value)}
             />
           </Stack>
-          <Button colorScheme="blue" onClick={performSearch}>
-            Search
-          </Button>
+          <Stack paddingEnd={2}>
+            <Text>&nbsp;</Text>
+            <Button colorScheme="blue" onClick={performSearch}>
+              Search
+            </Button>
+          </Stack>
         </Flex>
       </Box>
 
