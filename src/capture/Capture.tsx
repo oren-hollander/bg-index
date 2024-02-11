@@ -5,8 +5,8 @@ import {
   EventKind,
   GameEvent,
   Match,
-  PlayerScores,
-  secondsToTimestamp
+  secondsToTimestamp,
+  timestampToSeconds
 } from '../matches/match.ts'
 import {
   Box,
@@ -29,6 +29,7 @@ import {
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import {
+  AttachmentIcon,
   CheckCircleIcon,
   CheckIcon,
   CloseIcon,
@@ -54,6 +55,7 @@ export const Capture: FC = () => {
 
   const [events, setEvents] = useState<GameEvent[]>([])
   const [progress, setProgress] = useState(0)
+  const [stream, setStream] = useState('')
   const [title, setTitle] = useState('')
   const [date, setDate] = useState('')
   const [targetScore, setTargetScore] = useState('')
@@ -64,8 +66,6 @@ export const Capture: FC = () => {
 
   const [topPlayerScore, setTopPlayerScore] = useState('0')
   const [bottomPlayerScore, setBottomPlayerScore] = useState('0')
-
-  const [scores, setScores] = useState<PlayerScores[]>([])
 
   const [playerTurn, setPlayerTurn] = useState<'top' | 'bottom'>('top')
   const [exportedMatch, setExportedMatch] = useState<Match>()
@@ -82,25 +82,35 @@ export const Capture: FC = () => {
     setCaptureUrl(url)
   }
 
-  const addEvent = (kind: EventKind) => () => {
+  const addEvent = (event: GameEvent) => () => {
+    const getEventKindOrder = (kind: EventKind) => {
+      switch (kind) {
+        case 'start':
+          return 1
+        case 'double':
+          return 2
+        case 'take':
+          return 3
+        case 'drop':
+          return 4
+        case 'win':
+          return 5
+        case 'score':
+          return 6
+      }
+    }
     setEvents(events =>
       sortBy(
-        event => event.timestamp,
-        [
-          ...events,
-          { kind, player: playerTurn, timestamp: secondsToTimestamp(progress) }
-        ]
+        event => [
+          timestampToSeconds(event.timestamp),
+          getEventKindOrder(event.kind)
+        ],
+        [...events, event]
       )
     )
 
-    if (kind === 'double') {
+    if (event.kind === 'double') {
       setPlayerTurn(playerTurn === 'top' ? 'bottom' : 'top')
-    }
-    if (kind === 'start') {
-      setScores(scores => [
-        ...scores,
-        { top: parseInt(topPlayerScore), bottom: parseInt(bottomPlayerScore) }
-      ])
     }
   }
 
@@ -120,6 +130,22 @@ export const Capture: FC = () => {
   }
 
   const { onCopy } = useClipboard(JSON.stringify(exportedMatch ?? {}, null, 2))
+
+  const getPlayerName = (event: GameEvent) => {
+    switch (event.kind) {
+      case 'double':
+      case 'take':
+      case 'drop':
+      case 'win':
+        return event.player === 'top'
+          ? topPlayerShortName
+          : bottomPlayerShortName
+      case 'score':
+        return `${event.score.top} / ${event.score.bottom}`
+      case 'start':
+        return ''
+    }
+  }
 
   return (
     <Flex direction="row" bg={gray} h="100vh" w="100vw">
@@ -168,6 +194,12 @@ export const Capture: FC = () => {
               dispatch={setUrl}
             />
 
+            <Text mt={2}>Stream</Text>
+            <StateInput
+              isDisabled={captureUrl !== ''}
+              value={stream}
+              dispatch={setStream}
+            />
             <Text mt={2}>Match title</Text>
             <StateInput
               isDisabled={captureUrl !== ''}
@@ -240,31 +272,63 @@ export const Capture: FC = () => {
                 isRound
                 aria-label="Start"
                 icon={<StartIcon />}
-                onClick={addEvent('start')}
+                onClick={addEvent({
+                  kind: 'start',
+                  timestamp: secondsToTimestamp(progress)
+                })}
               />
               <IconButton
                 isRound
                 aria-label="Double"
                 icon={<DoubleIcon />}
-                onClick={addEvent('double')}
+                onClick={addEvent({
+                  kind: 'double',
+                  player: playerTurn,
+                  timestamp: secondsToTimestamp(progress)
+                })}
               />
               <IconButton
                 isRound
                 aria-label="Take"
                 icon={<CheckIcon />}
-                onClick={addEvent('take')}
+                onClick={addEvent({
+                  kind: 'take',
+                  player: playerTurn,
+                  timestamp: secondsToTimestamp(progress)
+                })}
               />
               <IconButton
                 isRound
                 aria-label="Drop"
                 icon={<CloseIcon />}
-                onClick={addEvent('drop')}
+                onClick={addEvent({
+                  kind: 'drop',
+                  player: playerTurn,
+                  timestamp: secondsToTimestamp(progress)
+                })}
               />
               <IconButton
                 isRound
                 aria-label="Win"
                 icon={<CheckCircleIcon />}
-                onClick={addEvent('win')}
+                onClick={addEvent({
+                  kind: 'win',
+                  player: playerTurn,
+                  timestamp: secondsToTimestamp(progress)
+                })}
+              />
+              <IconButton
+                isRound
+                aria-label="Score"
+                icon={<AttachmentIcon />}
+                onClick={addEvent({
+                  kind: 'score',
+                  timestamp: secondsToTimestamp(progress),
+                  score: {
+                    top: parseInt(topPlayerScore),
+                    bottom: parseInt(bottomPlayerScore)
+                  }
+                })}
               />
             </ButtonGroup>
           </Center>
@@ -320,13 +384,18 @@ export const Capture: FC = () => {
             <Button
               colorScheme="blue"
               onClick={() => {
+                if (exportedMatch) {
+                  setExportedMatch(undefined)
+                  return
+                }
+
                 setExportedMatch(
                   exportMatch(
                     url,
+                    stream,
                     title,
                     date,
                     Number.parseInt(targetScore),
-                    [...scores],
                     events,
                     {
                       top: { full: topPlayer, short: topPlayerShortName },
@@ -358,11 +427,7 @@ export const Capture: FC = () => {
               <Tbody>
                 {events.map(event => (
                   <Tr key={`${event.kind}-${event.timestamp}`}>
-                    <Td>
-                      {event.player === 'top'
-                        ? topPlayerShortName
-                        : bottomPlayerShortName}
-                    </Td>
+                    <Td>{getPlayerName(event)}</Td>
                     <Td>{event.kind}</Td>
                     <Td>{event.timestamp}</Td>
                     <Td>

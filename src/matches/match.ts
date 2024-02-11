@@ -64,21 +64,34 @@ export interface PlayerScores {
 }
 
 export interface Game {
-  startScore: PlayerScores
   events: GameEvent[]
 }
 
-export type EventKind = 'start' | 'double' | 'take' | 'drop' | 'win'
+export type EventKind = 'start' | 'double' | 'take' | 'drop' | 'win' | 'score'
 
-export interface GameEvent {
-  kind: EventKind
-  player: 'top' | 'bottom'
+export interface StartEvent {
+  kind: 'start'
   timestamp: string
 }
+
+export interface ScoreEvent {
+  kind: 'score'
+  timestamp: string
+  score: PlayerScores
+}
+
+export interface PlayerEvent {
+  kind: 'double' | 'take' | 'drop' | 'win'
+  timestamp: string
+  player: 'top' | 'bottom'
+}
+
+export type GameEvent = StartEvent | PlayerEvent | ScoreEvent
 
 export interface Match {
   id: string
   url: string
+  stream: string
   title: string
   date: string
   players: PlayerNames

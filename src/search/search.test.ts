@@ -5,6 +5,7 @@ import { Match } from '../matches/match.ts'
 const match1: Match = {
   id: 'a',
   url: 'https://example.com/clip1',
+  stream: 'Stream 1',
   title: 'NY Open',
   date: '2021-01-01',
   players: {
@@ -14,8 +15,7 @@ const match1: Match = {
   targetScore: 7,
   games: [
     {
-      startScore: { top: 0, bottom: 0 },
-      events: [{ kind: 'start', player: 'top', timestamp: '00:00' }]
+      events: [{ kind: 'start', timestamp: '00:00' }]
     }
   ]
 }

@@ -1,0 +1,244 @@
+{
+  "id": "eeb8a4d8-a7fc-476c-985d-ba890564ca74",
+  "url": "https://www.youtube.com/watch?v=8B6cJAGALuE",
+  "title": "Match 4/12",
+  "stream": "UBC 2023 Final - DAY 1",
+  "date": "2023-12-18",
+  "players": {
+    "top": {
+      "full": "Masayuki \"Mochy\" Mochizuki",
+      "short": "Mochy"
+    },
+    "bottom": {
+      "full": "Sander Lylloff",
+      "short": "Sander"
+    }
+  },
+  "targetScore": 7,
+  "games": [
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "4:53:58"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "5:02:30"
+        },
+        {
+          "kind": "drop",
+          "player": "bottom",
+          "timestamp": "5:02:44"
+        },
+        {
+          "kind": "score",
+          "timestamp": "5:02:44",
+          "score": {
+            "top": 1,
+            "bottom": 0
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "5:03:06"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "5:06:26"
+        },
+        {
+          "kind": "drop",
+          "player": "bottom",
+          "timestamp": "5:06:33"
+        },
+        {
+          "kind": "score",
+          "timestamp": "5:06:33",
+          "score": {
+            "top": 2,
+            "bottom": 0
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "5:06:55"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "5:26:27"
+        },
+        {
+          "kind": "take",
+          "player": "bottom",
+          "timestamp": "5:27:19"
+        },
+        {
+          "kind": "double",
+          "player": "bottom",
+          "timestamp": "5:31:38"
+        },
+        {
+          "kind": "take",
+          "player": "top",
+          "timestamp": "5:31:47"
+        },
+        {
+          "kind": "win",
+          "player": "bottom",
+          "timestamp": "5:34:10"
+        },
+        {
+          "kind": "score",
+          "timestamp": "5:34:10",
+          "score": {
+            "top": 2,
+            "bottom": 4
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "5:34:32"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "5:35:57"
+        },
+        {
+          "kind": "drop",
+          "player": "bottom",
+          "timestamp": "5:36:03"
+        },
+        {
+          "kind": "score",
+          "timestamp": "5:36:03",
+          "score": {
+            "top": 3,
+            "bottom": 4
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "5:36:18"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "5:39:40"
+        },
+        {
+          "kind": "drop",
+          "player": "bottom",
+          "timestamp": "5:41:10"
+        },
+        {
+          "kind": "score",
+          "timestamp": "5:41:10",
+          "score": {
+            "top": 4,
+            "bottom": 4
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "5:41:34"
+        },
+        {
+          "kind": "double",
+          "player": "bottom",
+          "timestamp": "5:46:50"
+        },
+        {
+          "kind": "drop",
+          "player": "top",
+          "timestamp": "5:47:33"
+        },
+        {
+          "kind": "score",
+          "timestamp": "5:47:33",
+          "score": {
+            "top": 4,
+            "bottom": 5
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "5:47:49"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "5:49:17"
+        },
+        {
+          "kind": "take",
+          "player": "bottom",
+          "timestamp": "5:49:18"
+        },
+        {
+          "kind": "win",
+          "player": "top",
+          "timestamp": "6:01:30"
+        },
+        {
+          "kind": "score",
+          "timestamp": "6:01:30",
+          "score": {
+            "top": 6,
+            "bottom": 5
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "player": "top",
+          "timestamp": "6:02:03"
+        },
+        {
+          "kind": "win",
+          "player": "top",
+          "timestamp": "6:12:02"
+        },
+        {
+          "kind": "score",
+          "timestamp": "6:12:02",
+          "score": {
+            "top": 7,
+            "bottom": 5
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,5 +1,4 @@
-import { isEqual } from 'lodash/fp'
-import { isString } from 'lodash'
+import { isEqual, isString, orderBy } from 'lodash/fp'
 import { Match, PlayerNames } from '../matches/match.ts'
 
 export type FieldMatcher<FieldType, QueryType = FieldType> = (
@@ -79,5 +78,5 @@ export const search = (query: Query, entries: Match[]): Match[] => {
     }
   }
 
-  return results
+  return orderBy(['date', 'stream', 'title'], ['desc', 'asc', 'asc'], results)
 }

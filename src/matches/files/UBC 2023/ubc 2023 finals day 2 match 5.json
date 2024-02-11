@@ -1,0 +1,123 @@
+{
+  "id": "19a8e6fb-4143-4e8e-af25-53612024d500",
+  "url": "https://www.youtube.com/watch?v=pA7PbktrcKk",
+  "title": "Match 5/12",
+  "stream": "UBC 2023 Final - DAY 2",
+  "date": "2023-12-19",
+  "players": {
+    "top": {
+      "full": "Masayuki \"Mochy\" Mochizuki",
+      "short": "Mochy"
+    },
+    "bottom": {
+      "full": "Sander Lylloff",
+      "short": "Sander"
+    }
+  },
+  "targetScore": 7,
+  "games": [
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "5:38"
+        },
+        {
+          "kind": "double",
+          "player": "bottom",
+          "timestamp": "10:58"
+        },
+        {
+          "kind": "take",
+          "player": "top",
+          "timestamp": "11:34"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "21:41"
+        },
+        {
+          "kind": "drop",
+          "player": "bottom",
+          "timestamp": "23:23"
+        },
+        {
+          "kind": "score",
+          "timestamp": "23:23",
+          "score": {
+            "top": 2,
+            "bottom": 0
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "23:48"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "30:17"
+        },
+        {
+          "kind": "drop",
+          "player": "bottom",
+          "timestamp": "30:58"
+        },
+        {
+          "kind": "score",
+          "timestamp": "30:58",
+          "score": {
+            "top": 3,
+            "bottom": 0
+          }
+        }
+      ]
+    },
+    {
+      "events": [
+        {
+          "kind": "start",
+          "timestamp": "31:37"
+        },
+        {
+          "kind": "double",
+          "player": "top",
+          "timestamp": "36:08"
+        },
+        {
+          "kind": "take",
+          "player": "bottom",
+          "timestamp": "37:17"
+        },
+        {
+          "kind": "double",
+          "player": "bottom",
+          "timestamp": "41:40"
+        },
+        {
+          "kind": "take",
+          "player": "top",
+          "timestamp": "41:41"
+        },
+        {
+          "kind": "win",
+          "player": "top",
+          "timestamp": "45:54"
+        },
+        {
+          "kind": "score",
+          "timestamp": "45:54",
+          "score": {
+            "top": 7,
+            "bottom": 0
+          }
+        }
+      ]
+    }
+  ]
+}

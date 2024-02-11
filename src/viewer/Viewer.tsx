@@ -10,7 +10,7 @@ import {
   useDisclosure
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { matches } from '../search/matches.ts'
+import { matches } from '../matches/matches.ts'
 import { Events } from './Events.tsx'
 
 interface ViewerProps {

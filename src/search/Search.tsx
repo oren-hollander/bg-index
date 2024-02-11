@@ -1,13 +1,14 @@
 import { FC, useState } from 'react'
 import { Query, search } from './search.ts'
 import { SearchResults } from './SearchResults.tsx'
-import { matches } from './matches.ts'
+import { matches } from '../matches/matches.ts'
 import { Match } from '../matches/match.ts'
 import { Box, Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import './input.css'
 
 export const Search: FC = () => {
+  const [stream, setStream] = useState('')
   const [title, setTitle] = useState('')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
@@ -41,6 +42,14 @@ export const Search: FC = () => {
     <Flex direction="column" h="100vh">
       <Box bg={gray} w="100%" p={4} color="white">
         <Flex direction="row">
+          <Stack paddingEnd={2}>
+            <Text color={white}>Stream</Text>
+            <Input
+              type="text"
+              value={stream}
+              onChange={e => setStream(e.target.value)}
+            />
+          </Stack>
           <Stack paddingEnd={2}>
             <Text color={white}>Title</Text>
             <Input

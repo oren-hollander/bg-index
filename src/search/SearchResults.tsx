@@ -18,6 +18,7 @@ export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
       <Table color={white}>
         <Thead>
           <Tr>
+            <Th color={white}>Stream</Th>
             <Th color={white}>Title</Th>
             <Th color={white}>Date</Th>
             <Th color={white}>Event</Th>
@@ -26,6 +27,7 @@ export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
         <Tbody>
           {matches.map(match => (
             <Tr key={match.id} onClick={() => show(match.id)} cursor="pointer">
+              <Td>{match.stream}</Td>
               <Td>{match.title}</Td>
               <Td>{match.date}</Td>
               <Td>

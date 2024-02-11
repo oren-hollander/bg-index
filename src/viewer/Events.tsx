@@ -20,11 +20,25 @@ import {
   UseDisclosureReturn
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { EventKind, GameEvent, Match } from '../matches/match.ts'
+import { EventKind, GameEvent, Match, ScoreEvent } from '../matches/match.ts'
 import { Score } from './Score.tsx'
 import { take } from 'lodash/fp'
 
 const getEventText = (kind: EventKind): string => `${kind}s`
+
+const getEventDescription = (match: Match, event: GameEvent): string => {
+  switch (event.kind) {
+    case 'start':
+      return 'Game starts'
+    case 'score':
+      return `Score: ${event.score.top} / ${event.score.bottom}`
+    case 'double':
+    case 'take':
+    case 'drop':
+    case 'win':
+      return `${match.players[event.player].short} ${getEventText(event.kind)}`
+  }
+}
 
 interface EventsProps {
   match: Match
@@ -65,13 +79,15 @@ export const Events: FC<EventsProps> = ({ match, disclosure, jump }) => {
           </FormControl>
 
           {match.games.map((game, i) => (
-            <Box
-              key={`${game.startScore.top}-${game.startScore.bottom}`}
-              marginTop={5}
-            >
+            <Box key={`game-${i + 1}`} marginTop={5}>
               <Text fontSize="xl">Game #{i + 1}</Text>
               {!spoilerProtection && (
-                <Score scores={game.startScore} names={match.players} />
+                <Score
+                  scores={
+                    (game.events[game.events.length - 1] as ScoreEvent).score
+                  }
+                  names={match.players}
+                />
               )}
               <TableContainer marginTop={3}>
                 <Table size="sm">
@@ -103,8 +119,7 @@ export const Events: FC<EventsProps> = ({ match, disclosure, jump }) => {
                           {event.timestamp}
                         </Td>
                         <Td borderColor="gray.500">
-                          {match.players[event.player].short}{' '}
-                          {getEventText(event.kind)}
+                          {getEventDescription(match, event)}
                         </Td>
                       </Tr>
                     ))}

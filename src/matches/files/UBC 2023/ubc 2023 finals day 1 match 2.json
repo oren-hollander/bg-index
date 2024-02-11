@@ -1,7 +1,8 @@
 {
   "id": "match-2",
   "url": "https://youtu.be/8B6cJAGALuE?",
-  "title": "UBC 2023 Final, Day 1, Match 2",
+  "stream": "UBC 2023 Final - DAY 1",
+  "title": "Match 2/12",
   "date": "2023-12-18",
   "players": {
     "top": { "full": "Masayuki \"Mochy\" Mochizuki", "short": "Mochy" },
@@ -13,14 +14,9 @@
   "targetScore": 7,
   "games": [
     {
-      "startScore": {
-        "top": 0,
-        "bottom": 0
-      },
       "events": [
         {
           "kind": "start",
-          "player": "top",
           "timestamp": "1:58:23"
         },
         {
@@ -37,18 +33,21 @@
           "kind": "win",
           "player": "bottom",
           "timestamp": "2:16:56"
+        },
+        {
+          "kind": "score",
+          "timestamp": "2:16:56",
+          "score": {
+            "top": 0,
+            "bottom": 2
+          }
         }
       ]
     },
     {
-      "startScore": {
-        "top": 0,
-        "bottom": 2
-      },
       "events": [
         {
           "kind": "start",
-          "player": "top",
           "timestamp": "2:17:20"
         },
         {
@@ -60,18 +59,21 @@
           "kind": "drop",
           "player": "top",
           "timestamp": "2:22:06"
+        },
+        {
+          "kind": "score",
+          "timestamp": "2:22:06",
+          "score": {
+            "top": 0,
+            "bottom": 3
+          }
         }
       ]
     },
     {
-      "startScore": {
-        "top": 0,
-        "bottom": 3
-      },
       "events": [
         {
           "kind": "start",
-          "player": "top",
           "timestamp": "2:22:28"
         },
         {
@@ -83,18 +85,21 @@
           "kind": "drop",
           "player": "bottom",
           "timestamp": "2:28:23"
+        },
+        {
+          "kind": "score",
+          "timestamp": "2:28:23",
+          "score": {
+            "top": 1,
+            "bottom": 3
+          }
         }
       ]
     },
     {
-      "startScore": {
-        "top": 1,
-        "bottom": 3
-      },
       "events": [
         {
           "kind": "start",
-          "player": "top",
           "timestamp": "2:28:54"
         },
         {
@@ -106,18 +111,21 @@
           "kind": "drop",
           "player": "top",
           "timestamp": "2:33:45"
+        },
+        {
+          "kind": "score",
+          "timestamp": "2:33:45",
+          "score": {
+            "top": 1,
+            "bottom": 4
+          }
         }
       ]
     },
     {
-      "startScore": {
-        "top": 1,
-        "bottom": 4
-      },
       "events": [
         {
           "kind": "start",
-          "player": "bottom",
           "timestamp": "2:34:05"
         },
         {
@@ -142,8 +150,16 @@
         },
         {
           "kind": "win",
-          "player": "bottom",
-          "timestamp": "2:46:06"
+          "timestamp": "2:46:06",
+          "player": "bottom"
+        },
+        {
+          "kind": "score",
+          "timestamp": "2:46:06",
+          "score": {
+            "top": 1,
+            "bottom": 7
+          }
         }
       ]
     }
