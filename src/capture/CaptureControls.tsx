@@ -33,7 +33,45 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
 }) => {
   return (
     <>
-      <Center mt={4}>
+      <Center>
+        <ButtonGroup colorScheme="green" variant="outline" mt="1em">
+          <Button
+            w="7em"
+            variant={playerTurn === 'top' ? 'solid' : 'outline'}
+            onClick={() => setPlayerTurn('top')}
+          >
+            {topPlayerName}
+          </Button>
+          <StateInput
+            me={1}
+            w="3em"
+            type="number"
+            value={topPlayerScore}
+            dispatch={setTopPlayerScore}
+          />
+        </ButtonGroup>
+      </Center>
+
+      <Center>
+        <ButtonGroup colorScheme="green" variant="outline" mt="1em">
+          <Button
+            w="7em"
+            variant={playerTurn === 'bottom' ? 'solid' : 'outline'}
+            onClick={() => setPlayerTurn('bottom')}
+          >
+            {bottomPlayerName}
+          </Button>
+          <StateInput
+            ms={1}
+            w="3em"
+            type="number"
+            value={bottomPlayerScore}
+            dispatch={setBottomPlayerScore}
+          />
+        </ButtonGroup>
+      </Center>
+
+      <Center mt="2em">
         <ButtonGroup marginStart={4} colorScheme="green">
           <IconButton
             isRound
@@ -108,44 +146,6 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
                 }
               })
             }
-          />
-        </ButtonGroup>
-      </Center>
-
-      <Center>
-        <ButtonGroup mt={4} colorScheme="green" variant="outline" pt={2}>
-          <Button
-            w="7em"
-            variant={playerTurn === 'top' ? 'solid' : 'outline'}
-            onClick={() => setPlayerTurn('top')}
-          >
-            {topPlayerName}
-          </Button>
-          <StateInput
-            me={1}
-            w="3em"
-            type="number"
-            value={topPlayerScore}
-            dispatch={setTopPlayerScore}
-          />
-        </ButtonGroup>
-      </Center>
-
-      <Center>
-        <ButtonGroup mt={4} colorScheme="green" variant="outline" pt={2}>
-          <Button
-            w="7em"
-            variant={playerTurn === 'bottom' ? 'solid' : 'outline'}
-            onClick={() => setPlayerTurn('bottom')}
-          >
-            {bottomPlayerName}
-          </Button>
-          <StateInput
-            ms={1}
-            w="3em"
-            type="number"
-            value={bottomPlayerScore}
-            dispatch={setBottomPlayerScore}
           />
         </ButtonGroup>
       </Center>
