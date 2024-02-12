@@ -34,7 +34,11 @@ export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
         </Thead>
         <Tbody>
           {matches.map(match => (
-            <Tr key={match.id} onClick={() => show(match.id)} cursor="pointer">
+            <Tr
+              key={match._id.toHexString()}
+              onClick={() => show(match._id.toHexString())}
+              cursor="pointer"
+            >
               <Td borderColor="gray.600">{match.stream}</Td>
               <Td borderColor="gray.600">{match.title}</Td>
               <Td borderColor="gray.600">{match.date}</Td>

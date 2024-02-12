@@ -1,3 +1,5 @@
+import { BSON } from 'realm-web'
+
 export function secondsToTimestamp(seconds: number): string {
   if (seconds < 60) {
     return seconds.toString()
@@ -89,7 +91,7 @@ export interface PlayerEvent {
 export type GameEvent = StartEvent | PlayerEvent | ScoreEvent
 
 export interface Match {
-  id: string
+  _id: BSON.ObjectId
   url: string
   stream: string
   title: string

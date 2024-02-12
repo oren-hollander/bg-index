@@ -1,5 +1,5 @@
 import { Game, GameEvent, Match, PlayerNames } from '../matches/match.ts'
-import { v4 as uuid } from 'uuid'
+import { BSON } from 'realm-web'
 
 export const getExportedMatch = (
   url: string,
@@ -26,7 +26,7 @@ export const getExportedMatch = (
   }
 
   return {
-    id: uuid(),
+    _id: new BSON.ObjectId(),
     url,
     title,
     stream,

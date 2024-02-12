@@ -1,9 +1,10 @@
 import { test, expect, describe } from 'vitest'
 import { search } from './search'
 import { Match } from '../matches/match.ts'
+import { BSON } from 'realm-web'
 
 const match1: Match = {
-  id: 'a',
+  _id: new BSON.ObjectId(),
   url: 'https://example.com/clip1',
   stream: 'Stream 1',
   title: 'NY Open',

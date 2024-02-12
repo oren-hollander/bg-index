@@ -1,11 +1,11 @@
-import { FC, useState } from 'react'
-import { Query, search } from './search.ts'
+import { FC, useEffect, useRef, useState } from 'react'
+import { Query } from './search.ts'
 import { SearchResults } from './SearchResults.tsx'
-import { matches } from '../matches/matches.ts'
 import { Match } from '../matches/match.ts'
 import { Box, Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import './input.css'
+import { MatchService } from '../matches/matchService.ts'
 
 export const Search: FC = () => {
   const [stream, setStream] = useState('')
@@ -14,12 +14,28 @@ export const Search: FC = () => {
   const [toDate, setToDate] = useState('')
   const [player1, setPlayer1] = useState('')
   const [player2, setPlayer2] = useState('')
+  const [searchResults, setSearchResults] = useState<Match[]>([])
 
-  const [searchResults, setSearchResults] = useState<Match[]>(
-    search({}, [...matches.values()])
-  )
+  const matchService = useRef<MatchService>()
 
-  const performSearch = () => {
+  useEffect(() => {
+    const init = async () => {
+      const service = await MatchService.connect()
+      const matches = await service.query({})
+      setSearchResults(matches)
+      matchService.current = service
+    }
+
+    init().catch(console.error)
+  }, [])
+
+  // search({}, [...matches.values()])
+
+  const performSearch = async () => {
+    if (!matchService.current) {
+      return
+    }
+
     const query: Query = {
       title: title === '' ? undefined : title,
       date:
@@ -35,7 +51,9 @@ export const Search: FC = () => {
               ? player2
               : undefined
     }
-    setSearchResults(search(query, [...matches.values()]))
+    const results = await matchService.current.query(query)
+    setSearchResults(results)
+    // setSearchResults(search(query, [...matches.values()]))
   }
 
   return (
