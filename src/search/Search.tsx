@@ -129,7 +129,7 @@ export const Search: FC = () => {
         </Flex>
       </Box>
 
-      <Flex flex="1">
+      <Flex flex="1" overflowY="auto">
         <Box flex="1" bg={gray}>
           <SearchResults matches={searchResults} />
         </Box>

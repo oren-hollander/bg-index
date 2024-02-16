@@ -28,7 +28,7 @@ export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
               Date
             </Th>
             <Th borderColor="gray.400" color={white}>
-              Event
+              Match
             </Th>
           </Tr>
         </Thead>
