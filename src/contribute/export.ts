@@ -26,6 +26,7 @@ export const getExportedMatch = (
 
   return {
     url,
+    contributor: '',
     title,
     stream,
     date,

@@ -5,6 +5,7 @@ import { BSON } from 'realm-web'
 
 const match1: Match = {
   _id: new BSON.ObjectId(),
+  contributor: 'John',
   url: 'https://example.com/clip1',
   stream: 'Stream 1',
   title: 'NY Open',
