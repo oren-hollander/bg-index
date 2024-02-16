@@ -21,6 +21,7 @@ interface ViewerProps {
 export const Viewer: FC<ViewerProps> = ({ matchId }) => {
   const playerRef = useRef<ReactPlayer>(null)
   const [playing, setPlaying] = useState(true)
+
   const [match, setMatch] = useState<Match>()
 
   const eventsDisclosure = useDisclosure()
@@ -52,15 +53,15 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
   }
 
   return (
-    match && (
-      <Flex direction="column" h="100vh" bg={gray}>
-        <Box bg="gray.700" color={white} w="100%" p={4}>
-          <Flex>
-            <Box paddingEnd={4} verticalAlign="middle">
-              <Button colorScheme="blue" onClick={eventsDisclosure.onOpen}>
-                Jump...
-              </Button>
-            </Box>
+    <Flex direction="column" h="100vh" bg={gray}>
+      <Box bg="gray.700" color={white} w="100%" p={4}>
+        <Flex>
+          <Box paddingEnd={4} verticalAlign="middle">
+            <Button colorScheme="blue" onClick={eventsDisclosure.onOpen}>
+              Jump...
+            </Button>
+          </Box>
+          {match && (
             <Box>
               <Text fontSize="xl">
                 {match.title}, {new Date(match.date).toDateString()}
@@ -70,14 +71,17 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
                 to {match.targetScore}
               </Text>
             </Box>
-            <Spacer />
-          </Flex>
-        </Box>
-
+          )}
+          <Spacer />
+        </Flex>
+      </Box>
+      {match && (
         <Events match={match} disclosure={eventsDisclosure} jump={jump} />
+      )}
 
-        <Flex flex="1" bg={gray}>
-          <Box flex="1">
+      <Flex flex="1" bg={gray}>
+        <Box flex="1">
+          {match && (
             <ReactPlayer
               width="100%"
               height="100%"
@@ -87,9 +91,9 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
               url={match.url}
               controls={true}
             />
-          </Box>
-        </Flex>
+          )}
+        </Box>
       </Flex>
-    )
+    </Flex>
   )
 }
