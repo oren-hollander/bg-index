@@ -56,6 +56,7 @@ export const numericMatcher = makeQueryMatcher<number>(
 )
 
 export interface Query {
+  stream?: string
   title?: string
   date?: DateQuery
   players?: [string, string] | string

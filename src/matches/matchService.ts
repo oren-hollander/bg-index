@@ -59,6 +59,10 @@ export class MatchService {
       ]
     }
 
+    if (query.stream) {
+      filter.stream = { $regex: query.stream, $options: 'i' }
+    }
+
     if (query.title) {
       filter.title = { $regex: query.title, $options: 'i' }
     }

@@ -38,6 +38,7 @@ export const Search: FC = () => {
 
     const query: Query = {
       title: title === '' ? undefined : title,
+      stream: stream === '' ? undefined : stream,
       date:
         fromDate !== '' && toDate !== ''
           ? { from: new Date(fromDate), to: new Date(toDate) }
@@ -53,7 +54,6 @@ export const Search: FC = () => {
     }
     const results = await matchService.current.query(query)
     setSearchResults(results)
-    // setSearchResults(search(query, [...matches.values()]))
   }
 
   return (
