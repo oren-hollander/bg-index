@@ -134,10 +134,10 @@ export const Contribute: FC = () => {
       <Box
         flex={1}
         overflowY="auto"
+        bg="gray.800"
         color={white}
         paddingStart={3}
         paddingEnd={2}
-        bg="gray.800"
       >
         {captureUrl === '' && (
           <MatchDetails
@@ -164,25 +164,31 @@ export const Contribute: FC = () => {
         )}
 
         {captureUrl !== '' && (
-          <>
-            <CaptureControls
-              progress={progress}
-              playerTurnState={[playerTurn, setPlayerTurn]}
-              topPlayerScoreState={[topPlayerScore, setTopPlayerScore]}
-              bottomPlayerScoreState={[bottomPlayerScore, setBottomPlayerScore]}
-              topPlayerName={topPlayerShortName}
-              bottomPlayerName={bottomPlayerShortName}
-              addEvent={addEvent}
-              exportMatch={exportMatch}
-            />
-
-            <EventList
-              events={events}
-              topPlayerName={topPlayerShortName}
-              bottomPlayerName={bottomPlayerShortName}
-              deleteEvent={deleteEvent}
-            />
-          </>
+          <Flex direction="column" height="100vh">
+            <Box top="0" width="full" zIndex="sticky">
+              <CaptureControls
+                progress={progress}
+                playerTurnState={[playerTurn, setPlayerTurn]}
+                topPlayerScoreState={[topPlayerScore, setTopPlayerScore]}
+                bottomPlayerScoreState={[
+                  bottomPlayerScore,
+                  setBottomPlayerScore
+                ]}
+                topPlayerName={topPlayerShortName}
+                bottomPlayerName={bottomPlayerShortName}
+                addEvent={addEvent}
+                exportMatch={exportMatch}
+              />
+            </Box>
+            <Box overflowY="auto">
+              <EventList
+                events={events}
+                topPlayerName={topPlayerShortName}
+                bottomPlayerName={bottomPlayerShortName}
+                deleteEvent={deleteEvent}
+              />
+            </Box>
+          </Flex>
         )}
       </Box>
     </Flex>
