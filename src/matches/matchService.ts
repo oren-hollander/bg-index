@@ -1,7 +1,7 @@
-import { App, Credentials, BSON } from 'realm-web'
+import { App, BSON, Credentials } from 'realm-web'
 import { Match } from './match.ts'
 import { Query } from '../search/search.ts'
-import { isArray, isString, set } from 'lodash/fp'
+import { isArray, isString } from 'lodash/fp'
 import Filter = Realm.Services.MongoDB.Filter
 
 export class MatchService {
@@ -28,50 +28,36 @@ export class MatchService {
   }
 
   async query(query: Query): Promise<Match[]> {
-    let dateFilter: Record<string, Date> = {}
+    const filter: Filter = {}
+
     if (query.date?.from) {
-      dateFilter = set('$gte', query.date.from, dateFilter)
+      filter.$gte = query.date.from
     }
 
     if (query.date?.to) {
-      dateFilter = set('$lte', query.date.to, dateFilter)
+      filter.$lte = query.date.to
     }
 
-    let playersFilter = {}
     if (isString(query.players)) {
-      playersFilter = {
-        $or: [
-          { 'top.full': { $regex: query.players, $options: 'i' } },
-          { 'bottom.full': { $regex: query.players, $options: 'i' } }
-        ]
-      }
+      filter.$or = [
+        { 'players.top.full': { $regex: query.players, $options: 'i' } },
+        { 'players.bottom.full': { $regex: query.players, $options: 'i' } }
+      ]
     } else if (isArray(query.players)) {
-      playersFilter = {
-        $or: [
-          {
-            'top.full': { $regex: query.players[0], $options: 'i' },
-            'bottom.full': { $regex: query.players[1], $options: 'i' }
-          },
-          {
-            'top.full': { $regex: query.players[1], $options: 'i' },
-            'bottom.full': { $regex: query.players[0], $options: 'i' }
-          }
-        ]
-      }
+      filter.$or = [
+        {
+          'players.top.full': { $regex: query.players[0], $options: 'i' },
+          'players.bottom.full': { $regex: query.players[1], $options: 'i' }
+        },
+        {
+          'players.top.full': { $regex: query.players[1], $options: 'i' },
+          'players.bottom.full': { $regex: query.players[0], $options: 'i' }
+        }
+      ]
     }
-
-    const filter: Filter = {}
 
     if (query.title) {
-      filter.title = query.title
-    }
-
-    if (query.date) {
-      filter.date = dateFilter
-    }
-
-    if (query.players) {
-      filter.players = playersFilter
+      filter.title = { $regex: query.title, $options: 'i' }
     }
 
     if (query.targetScore) {
