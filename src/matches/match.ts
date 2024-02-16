@@ -90,8 +90,7 @@ export interface PlayerEvent {
 
 export type GameEvent = StartEvent | PlayerEvent | ScoreEvent
 
-export interface Match {
-  _id: BSON.ObjectId
+export interface NewMatch {
   url: string
   stream: string
   title: string
@@ -99,4 +98,8 @@ export interface Match {
   players: PlayerNames
   targetScore: number
   games: Game[]
+}
+
+export interface Match extends NewMatch {
+  _id: BSON.ObjectId
 }

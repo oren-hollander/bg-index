@@ -6,6 +6,7 @@ import { Box, Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import './input.css'
 import { MatchService } from '../matches/matchService.ts'
+import { router } from '../router.ts'
 
 export const Search: FC = () => {
   const [stream, setStream] = useState('')
@@ -28,8 +29,6 @@ export const Search: FC = () => {
 
     init().catch(console.error)
   }, [])
-
-  // search({}, [...matches.values()])
 
   const performSearch = async () => {
     if (!matchService.current) {
@@ -113,6 +112,17 @@ export const Search: FC = () => {
             <Text>&nbsp;</Text>
             <Button colorScheme="blue" onClick={performSearch}>
               Search
+            </Button>
+          </Stack>
+
+          <Stack paddingEnd={2}>
+            <Text>&nbsp;</Text>
+            <Button
+              colorScheme="green"
+              variant="outline"
+              onClick={() => router.push('Contribute')}
+            >
+              Contribute
             </Button>
           </Stack>
         </Flex>

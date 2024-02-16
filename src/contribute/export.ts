@@ -1,5 +1,4 @@
-import { Game, GameEvent, Match, PlayerNames } from '../matches/match.ts'
-import { BSON } from 'realm-web'
+import { Game, GameEvent, NewMatch, PlayerNames } from '../matches/match.ts'
 
 export const getExportedMatch = (
   url: string,
@@ -9,7 +8,7 @@ export const getExportedMatch = (
   targetScore: number,
   events: GameEvent[],
   players: PlayerNames
-): Match => {
+): NewMatch => {
   const games: Game[] = []
   let gameEvents: GameEvent[] = []
 
@@ -26,7 +25,6 @@ export const getExportedMatch = (
   }
 
   return {
-    _id: new BSON.ObjectId(),
     url,
     title,
     stream,

@@ -78,6 +78,12 @@ export class MatchService {
       filter.targetScore = query.targetScore
     }
 
-    return this.matchesCollection.find(filter)
+    return this.matchesCollection.find(filter, {
+      sort: {
+        date: -1,
+        stream: 1,
+        title: 1
+      }
+    })
   }
 }

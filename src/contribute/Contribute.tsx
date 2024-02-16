@@ -4,22 +4,22 @@ import { OnProgressProps } from 'react-player/base'
 import {
   EventKind,
   GameEvent,
-  Match,
+  NewMatch,
   timestampToSeconds
 } from '../matches/match.ts'
-import { Box, Button, Code, Flex, useClipboard } from '@chakra-ui/react'
+import { Box, Flex, useDisclosure } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { filter, omit, sortBy } from 'lodash/fp'
 import { MatchDetails } from './MatchDetails.tsx'
 import { CaptureControls } from './CaptureControls.tsx'
 import { getExportedMatch } from './export.ts'
 import { EventList } from './EventList.tsx'
+import { ExportMatch } from './ExportMatch.tsx'
 
-export const Capture: FC = () => {
+export const Contribute: FC = () => {
   const playerRef = useRef<ReactPlayer>(null)
 
   const [captureUrl, setCaptureUrl] = useState<string>('')
-
   const [events, setEvents] = useState<GameEvent[]>([])
   const [progress, setProgress] = useState(0)
 
@@ -37,7 +37,9 @@ export const Capture: FC = () => {
   const [bottomPlayerScore, setBottomPlayerScore] = useState('0')
 
   const [playerTurn, setPlayerTurn] = useState<'top' | 'bottom'>('top')
-  const [exportedMatch, setExportedMatch] = useState<Match>()
+  const [exportedMatch, setExportedMatch] = useState<NewMatch>()
+
+  const exportMatchDisclosure = useDisclosure()
 
   const deleteEvent = (event: GameEvent) => {
     setEvents(events => filter(e => e !== event, events))
@@ -68,11 +70,12 @@ export const Capture: FC = () => {
           return 6
       }
     }
+
     setEvents(events => {
       const es = [...events, event].map(e => ({
         ...e,
-        s: timestampToSeconds(event.timestamp),
-        k: getEventKindOrder(event.kind)
+        s: timestampToSeconds(e.timestamp),
+        k: getEventKindOrder(e.kind)
       }))
 
       const es2 = sortBy(['s', 'k'], es)
@@ -84,14 +87,7 @@ export const Capture: FC = () => {
     }
   }
 
-  const { onCopy } = useClipboard(JSON.stringify(exportedMatch ?? {}, null, 2))
-
   const exportMatch = () => {
-    if (exportedMatch) {
-      setExportedMatch(undefined)
-      return
-    }
-
     setExportedMatch(
       getExportedMatch(
         url,
@@ -112,35 +108,27 @@ export const Capture: FC = () => {
         }
       )
     )
+
+    exportMatchDisclosure.onOpen()
   }
 
   return (
     <Flex direction="row" bg={gray} h="100vh" w="100vw">
-      {!exportedMatch && (
-        <Box flex="3">
-          {captureUrl !== '' && (
-            <ReactPlayer
-              width="100%"
-              height="100vh"
-              ref={playerRef}
-              onProgress={setClipProgress}
-              url={captureUrl}
-              controls={true}
-            />
-          )}
-        </Box>
-      )}
+      <Box flex="3">
+        {url !== '' && (
+          <ReactPlayer
+            width="100%"
+            height="100vh"
+            ref={playerRef}
+            onProgress={setClipProgress}
+            url={url}
+            controls={true}
+          />
+        )}
+      </Box>
+
       {exportedMatch && (
-        <Box flex="3" height="100vh" overflowY="auto">
-          <Button size="sm" m="0.5em" colorScheme="green" onClick={onCopy}>
-            Copy
-          </Button>
-          <pre>
-            <Code m="1em" bg={gray} color={white}>
-              {JSON.stringify(exportedMatch, null, 2)}
-            </Code>
-          </pre>
-        </Box>
+        <ExportMatch match={exportedMatch} disclosure={exportMatchDisclosure} />
       )}
 
       <Box

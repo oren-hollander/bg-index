@@ -52,7 +52,7 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
 
   return (
     match && (
-      <Flex direction="column" h="100vh">
+      <Flex direction="column" h="100vh" bg={gray}>
         <Box bg="gray.700" color={white} w="100%" p={4}>
           <Flex>
             <Box paddingEnd={4} verticalAlign="middle">
