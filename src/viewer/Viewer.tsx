@@ -12,6 +12,7 @@ import {
 import { gray, white } from '../colors.ts'
 import { Events } from './Events.tsx'
 import { MatchService } from '../matches/matchService.ts'
+import { Credentials } from 'realm-web'
 
 interface ViewerProps {
   matchId: string
@@ -26,7 +27,7 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
 
   useEffect(() => {
     const init = async () => {
-      const matchService = await MatchService.connect()
+      const matchService = await MatchService.connect(Credentials.anonymous())
       const match = await matchService.getMatch(matchId)
       setMatch(match)
     }

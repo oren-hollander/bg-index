@@ -91,6 +91,7 @@ export interface PlayerEvent {
 export type GameEvent = StartEvent | PlayerEvent | ScoreEvent
 
 export interface NewMatch {
+  contributor: string
   url: string
   stream: string
   title: string

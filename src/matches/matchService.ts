@@ -1,5 +1,5 @@
 import { App, BSON, Credentials } from 'realm-web'
-import { Match } from './match.ts'
+import { Match, NewMatch } from './match.ts'
 import { Query } from '../search/search.ts'
 import { isArray, isString } from 'lodash/fp'
 import Filter = Realm.Services.MongoDB.Filter
@@ -9,14 +9,17 @@ export class MatchService {
     private readonly matchesCollection: Realm.Services.MongoDB.MongoDBCollection<Match>
   ) {}
 
-  static async connect(): Promise<MatchService> {
+  static async connect(credentials: Credentials): Promise<MatchService> {
     const app = new App({ id: 'bg-index-wsvuk' })
 
-    const credentials = Credentials.anonymous()
     const user = await app.logIn(credentials)
     const client = user.mongoClient('mongodb-atlas')
     const collection = client.db('bg-index').collection<Match>('matches')
     return new MatchService(collection)
+  }
+
+  async addMatch(match: NewMatch): Promise<void> {
+    await this.matchesCollection.insertOne(match)
   }
 
   async getMatch(id: string): Promise<Match | undefined> {

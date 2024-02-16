@@ -7,6 +7,7 @@ import { gray, white } from '../colors.ts'
 import './input.css'
 import { MatchService } from '../matches/matchService.ts'
 import { router } from '../router.ts'
+import { Credentials } from 'realm-web'
 
 export const Search: FC = () => {
   const [stream, setStream] = useState('')
@@ -21,7 +22,7 @@ export const Search: FC = () => {
 
   useEffect(() => {
     const init = async () => {
-      const service = await MatchService.connect()
+      const service = await MatchService.connect(Credentials.anonymous())
       const matches = await service.query({})
       setSearchResults(matches)
       matchService.current = service
