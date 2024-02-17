@@ -1,15 +1,10 @@
 import { FC, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { OnProgressProps } from 'react-player/base'
-import {
-  EventKind,
-  GameEvent,
-  NewMatch,
-  timestampToSeconds
-} from '../matches/match.ts'
+import { GameEvent, NewMatch, timestampToSeconds } from '../matches/match.ts'
 import { Box, Button, Flex, useDisclosure } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { filter, omit, sortBy } from 'lodash/fp'
+import { filter, sortBy } from 'lodash/fp'
 import { MatchDetails } from './MatchDetails.tsx'
 import { CaptureControls } from './CaptureControls.tsx'
 import { getExportedMatch } from './export.ts'
@@ -54,32 +49,8 @@ export const Contribute: FC = () => {
   }
 
   const addEvent = (event: GameEvent) => {
-    const getEventKindOrder = (kind: EventKind) => {
-      switch (kind) {
-        case 'start':
-          return 1
-        case 'double':
-          return 2
-        case 'take':
-          return 3
-        case 'drop':
-          return 4
-        case 'win':
-          return 5
-        case 'score':
-          return 6
-      }
-    }
-
     setEvents(events => {
-      const es = [...events, event].map(e => ({
-        ...e,
-        s: timestampToSeconds(e.timestamp),
-        k: getEventKindOrder(e.kind)
-      }))
-
-      const es2 = sortBy(['s', 'k'], es)
-      return es2.map(e => omit(['s', 'k'], e)) as GameEvent[]
+      return sortBy(e => timestampToSeconds(e.timestamp), [...events, event])
     })
 
     if (event.kind === 'double') {
@@ -182,6 +153,7 @@ export const Contribute: FC = () => {
                 ]}
                 topPlayerName={topPlayerShortName}
                 bottomPlayerName={bottomPlayerShortName}
+                events={events}
                 addEvent={addEvent}
                 exportMatch={exportMatch}
               />

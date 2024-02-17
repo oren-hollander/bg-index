@@ -1,7 +1,11 @@
 import { FC } from 'react'
 import { Button, ButtonGroup, Center, IconButton } from '@chakra-ui/react'
 import { DoubleIcon, StartIcon } from './icons.tsx'
-import { GameEvent, secondsToTimestamp } from '../matches/match.ts'
+import {
+  GameEvent,
+  secondsToTimestamp,
+  timestampToSeconds
+} from '../matches/match.ts'
 import {
   AttachmentIcon,
   CheckCircleIcon,
@@ -9,8 +13,10 @@ import {
   CloseIcon
 } from '@chakra-ui/icons'
 import { State, StateInput } from './StateInput.tsx'
+import { findLast, isUndefined } from 'lodash/fp'
 
 interface CaptureControlsProps {
+  events: GameEvent[]
   progress: number
   playerTurnState: State<'top' | 'bottom'>
   topPlayerScoreState: State<string>
@@ -22,6 +28,7 @@ interface CaptureControlsProps {
 }
 
 export const CaptureControls: FC<CaptureControlsProps> = ({
+  events,
   progress,
   playerTurnState: [playerTurn, setPlayerTurn],
   topPlayerScoreState: [topPlayerScore, setTopPlayerScore],
@@ -30,6 +37,32 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
   bottomPlayerName,
   addEvent
 }) => {
+  const previousEvent = findLast(
+    event => timestampToSeconds(event.timestamp) <= progress,
+    events
+  )
+
+  const canStart = (): boolean =>
+    previousEvent === undefined || previousEvent.kind === 'score'
+
+  const canDouble = (): boolean =>
+    !isUndefined(previousEvent) &&
+    (previousEvent.kind === 'start' || previousEvent.kind === 'take')
+
+  const canTake = (): boolean =>
+    !isUndefined(previousEvent) && previousEvent.kind === 'double'
+
+  const canDrop = (): boolean =>
+    !isUndefined(previousEvent) && previousEvent.kind === 'double'
+
+  const canWin = (): boolean =>
+    !isUndefined(previousEvent) &&
+    (previousEvent.kind === 'start' || previousEvent.kind === 'take')
+
+  const canScore = (): boolean =>
+    !isUndefined(previousEvent) &&
+    (previousEvent.kind === 'win' || previousEvent.kind === 'drop')
+
   return (
     <>
       <Center>
@@ -73,6 +106,7 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
       <Center mt="2em">
         <ButtonGroup marginStart={4} colorScheme="green">
           <IconButton
+            isDisabled={!canStart()}
             isRound
             aria-label="Start"
             icon={<StartIcon />}
@@ -84,6 +118,7 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
             }
           />
           <IconButton
+            isDisabled={!canDouble()}
             isRound
             aria-label="Double"
             icon={<DoubleIcon />}
@@ -96,6 +131,7 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
             }
           />
           <IconButton
+            isDisabled={!canTake()}
             isRound
             aria-label="Take"
             icon={<CheckIcon />}
@@ -108,6 +144,7 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
             }
           />
           <IconButton
+            isDisabled={!canDrop()}
             isRound
             aria-label="Drop"
             icon={<CloseIcon />}
@@ -120,6 +157,7 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
             }
           />
           <IconButton
+            isDisabled={!canWin()}
             isRound
             aria-label="Win"
             icon={<CheckCircleIcon />}
@@ -132,6 +170,7 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
             }
           />
           <IconButton
+            isDisabled={!canScore()}
             isRound
             aria-label="Score"
             icon={<AttachmentIcon />}

@@ -65,12 +65,6 @@ export interface PlayerScores {
   bottom: number
 }
 
-export interface Game {
-  events: GameEvent[]
-}
-
-export type EventKind = 'start' | 'double' | 'take' | 'drop' | 'win' | 'score'
-
 export interface StartEvent {
   kind: 'start'
   timestamp: string
@@ -89,6 +83,12 @@ export interface PlayerEvent {
 }
 
 export type GameEvent = StartEvent | PlayerEvent | ScoreEvent
+
+export type EventKind = GameEvent['kind']
+
+export interface Game {
+  events: GameEvent[]
+}
 
 export interface NewMatch {
   contributor: string
