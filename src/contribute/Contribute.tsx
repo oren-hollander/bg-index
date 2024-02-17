@@ -7,7 +7,7 @@ import {
   NewMatch,
   timestampToSeconds
 } from '../matches/match.ts'
-import { Box, Flex, useDisclosure } from '@chakra-ui/react'
+import { Box, Button, Flex, useDisclosure } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { filter, omit, sortBy } from 'lodash/fp'
 import { MatchDetails } from './MatchDetails.tsx'
@@ -166,6 +166,12 @@ export const Contribute: FC = () => {
         {captureUrl !== '' && (
           <Flex direction="column" height="100vh">
             <Box top="0" width="full" zIndex="sticky">
+              <Box mt={4}>
+                <Button colorScheme="blue" onClick={exportMatch}>
+                  Add to index
+                </Button>
+              </Box>
+
               <CaptureControls
                 progress={progress}
                 playerTurnState={[playerTurn, setPlayerTurn]}

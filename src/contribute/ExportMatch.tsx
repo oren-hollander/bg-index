@@ -2,7 +2,6 @@ import { FC, useState } from 'react'
 import {
   Box,
   Button,
-  Code,
   Flex,
   Input,
   Modal,
@@ -67,16 +66,9 @@ export const ExportMatch: FC<ExportMatchProps> = ({
     <Modal isOpen={isOpen} onClose={onClose} size="xl">
       <ModalOverlay />
       <ModalContent bg={gray} color={white}>
-        <ModalHeader>Export match</ModalHeader>
+        <ModalHeader>Add match</ModalHeader>
         <ModalCloseButton />
         <ModalBody>
-          <Box flex="3" overflowY="auto" height="20em">
-            <pre>
-              <Code m="1em" bg="gray.700" color={white}>
-                {JSON.stringify(match, null, 2)}
-              </Code>
-            </pre>
-          </Box>
           <Box>
             <Flex direction="row" mt="1em">
               <Text mr="1em" w="6em" align="right">

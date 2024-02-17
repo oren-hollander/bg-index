@@ -1,5 +1,5 @@
 import { FC } from 'react'
-import { Box, Button, ButtonGroup, Center, IconButton } from '@chakra-ui/react'
+import { Button, ButtonGroup, Center, IconButton } from '@chakra-ui/react'
 import { DoubleIcon, StartIcon } from './icons.tsx'
 import { GameEvent, secondsToTimestamp } from '../matches/match.ts'
 import {
@@ -28,8 +28,7 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
   bottomPlayerScoreState: [bottomPlayerScore, setBottomPlayerScore],
   topPlayerName,
   bottomPlayerName,
-  addEvent,
-  exportMatch
+  addEvent
 }) => {
   return (
     <>
@@ -149,12 +148,6 @@ export const CaptureControls: FC<CaptureControlsProps> = ({
           />
         </ButtonGroup>
       </Center>
-
-      <Box mt={4}>
-        <Button colorScheme="blue" onClick={exportMatch}>
-          Export
-        </Button>
-      </Box>
     </>
   )
 }
