@@ -13,6 +13,7 @@ import { gray, white } from '../colors.ts'
 import { Events } from './Events.tsx'
 import { MatchService } from '../matches/matchService.ts'
 import { Credentials } from 'realm-web'
+import { Transcribe } from '../transcribe/Transcribe.tsx'
 
 interface ViewerProps {
   matchId: string
@@ -54,7 +55,11 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
 
   return (
     <Flex direction="column" h="100vh" bg={gray}>
-      <Box bg="gray.700" color={white} w="100%" p={4}>
+      {match && (
+        <Events match={match} disclosure={eventsDisclosure} jump={jump} />
+      )}
+
+      <Box bg="gray.700" color={white} w="100%" p={4} height="80px">
         <Flex>
           <Box paddingEnd={4} verticalAlign="middle">
             <Button colorScheme="blue" onClick={eventsDisclosure.onOpen}>
@@ -75,12 +80,9 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
           <Spacer />
         </Flex>
       </Box>
-      {match && (
-        <Events match={match} disclosure={eventsDisclosure} jump={jump} />
-      )}
 
-      <Flex flex="1" bg={gray}>
-        <Box flex="1">
+      <Flex flex={1} position="relative">
+        <Box flex={1}>
           {match && (
             <ReactPlayer
               width="100%"
@@ -92,6 +94,8 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
               controls={true}
             />
           )}
+
+          <Transcribe />
         </Box>
       </Flex>
     </Flex>
