@@ -40,7 +40,8 @@ const App: FC = () => {
     'Match',
     'Contribute',
     'Players',
-    'Events'
+    'Events',
+    'Streams'
   ])
 
   if (!ready || !services.current) {
@@ -87,13 +88,28 @@ const App: FC = () => {
     case 'Events':
       return (
         <CrudEditor
-          fields={[
-            { name: 'title', type: 'string' },
-            { name: 'date', type: 'date' }
-          ]}
+          fields={[{ name: 'title', type: 'string' }]}
           service={services.current.events}
         />
       )
+    case 'Streams':
+      return (
+        <CrudEditor
+          fields={[
+            { name: 'title', type: 'string' },
+            { name: 'url', type: 'string' },
+            { name: 'date', type: 'string' },
+            {
+              name: 'eventId',
+              type: 'ref',
+              service: services.current.events,
+              displayFieldName: 'title'
+            }
+          ]}
+          service={services.current?.streams}
+        />
+      )
+
     default:
       router.replace('Home')
       return null

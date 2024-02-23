@@ -25,5 +25,9 @@ export const CollectionValue: FC<CollectionValueProps> = ({
     })
   }, [service, id, fieldName])
 
-  return value ?? null
+  if (value instanceof ObjectId) {
+    return value.toHexString()
+  } else {
+    return value ?? null
+  }
 }

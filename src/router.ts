@@ -5,5 +5,6 @@ export const router = createRouter({
   Match: '/bg-index/matches/:matchId',
   Contribute: '/bg-index/contribute',
   Players: '/bg-index/players',
-  Events: '/bg-index/events'
+  Events: '/bg-index/events',
+  Streams: '/bg-index/streams'
 })

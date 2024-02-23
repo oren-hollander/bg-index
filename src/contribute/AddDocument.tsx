@@ -1,46 +1,9 @@
-import { Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
+import { Button, Flex, Stack, Text } from '@chakra-ui/react'
 import { FC, useState } from 'react'
-import { FieldDefinition, FieldType, Value, Values } from './CrudEditor.tsx'
-import { isUndefined, toNumber } from 'lodash/fp'
+import { FieldDefinition, Value, Values } from './CrudEditor.tsx'
+import { isUndefined } from 'lodash/fp'
 import { getFieldName } from './getFieldName.ts'
-
-interface FieldEditorProps {
-  fieldType: FieldType
-  value: Value | undefined
-  onChange: (value: Value) => void
-}
-
-const FieldEditor: FC<FieldEditorProps> = ({ fieldType, value, onChange }) => {
-  if (fieldType === 'string') {
-    return (
-      <Input
-        type="text"
-        value={(value as string | undefined) ?? ''}
-        onChange={e => onChange(e.target.value)}
-      />
-    )
-  }
-
-  if (fieldType === 'number') {
-    return (
-      <Input
-        type="number"
-        value={(value as number | undefined) ?? ''}
-        onChange={e => onChange(toNumber(e.target.value))}
-      />
-    )
-  }
-
-  if (fieldType === 'date') {
-    return (
-      <Input
-        type="date"
-        value={(value as string | undefined) ?? ''}
-        onChange={e => onChange(e.target.value)}
-      />
-    )
-  }
-}
+import { FieldEditor } from './FieldEditor.tsx'
 
 interface AddDocumentProps {
   fields: FieldDefinition[]
@@ -69,7 +32,7 @@ export const AddDocument: FC<AddDocumentProps> = ({ fields, onAdd }) => {
         <Stack key={field.name} p="1em">
           <Text>{getFieldName(field.name)}</Text>
           <FieldEditor
-            fieldType={field.type}
+            fieldDefinition={field}
             value={values[field.name]}
             onChange={(value: Value) =>
               setValues(values => ({ ...values, [field.name]: value }))
