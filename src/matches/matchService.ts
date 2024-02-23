@@ -1,6 +1,6 @@
 import { App, BSON, Credentials } from 'realm-web'
 import { Match, NewMatch } from './match.ts'
-import { Query } from '../search/search.ts'
+import { Query } from '../search/query.ts'
 import { isArray, isString } from 'lodash/fp'
 import Filter = Realm.Services.MongoDB.Filter
 

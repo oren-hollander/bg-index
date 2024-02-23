@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react'
-import { Query } from './search.ts'
+import { Query } from './query.ts'
 import { SearchResults } from './SearchResults.tsx'
 import { Match } from '../matches/match.ts'
 import { Box, Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
