@@ -38,7 +38,6 @@ export const Contribute: FC<ContributeProps> = ({
   const [url, setUrl] = useState('')
   const [stream, setStream] = useState<Stream>()
   const [title, setTitle] = useState('')
-  const [date, setDate] = useState('')
   const [targetScore, setTargetScore] = useState('')
 
   const [event, setEvent] = useState<Event>()
@@ -129,7 +128,6 @@ export const Contribute: FC<ContributeProps> = ({
             urlState={[url, setUrl]}
             streamState={[stream, setStream]}
             titleState={[title, setTitle]}
-            dateState={[date, setDate]}
             targetScoreState={[targetScore, setTargetScore]}
             eventState={[event, setEvent]}
             topPlayerState={[topPlayer, setTopPlayer]}

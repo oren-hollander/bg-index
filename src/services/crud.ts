@@ -1,6 +1,7 @@
 import { BSON } from 'realm-web'
 import Collection = Realm.Services.MongoDB.MongoDBCollection
 import ObjectId = BSON.ObjectId
+import Filter = Realm.Services.MongoDB.Filter
 
 export interface HasId {
   _id: ObjectId
@@ -14,6 +15,10 @@ export class CRUDService<T extends HasId> {
 
   list(): Promise<T[]> {
     return this.collection.find()
+  }
+
+  query(filter: Filter): Promise<T[]> {
+    return this.collection.find(filter)
   }
 
   async add(document: WithoutId<T>): Promise<void> {

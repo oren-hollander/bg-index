@@ -9,7 +9,6 @@ import { Stream } from '../services/stream.ts'
 interface MatchDetailsProps {
   urlState: State<string>
   titleState: State<string>
-  dateState: State<string>
   targetScoreState: State<string>
 
   streamState: State<Stream | undefined>
@@ -27,7 +26,6 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
   urlState: [url, setUrl],
   streamState: [stream, setStream],
   titleState: [title, setTitle],
-  dateState: [date, setDate],
   targetScoreState: [targetScore, setTargetScore],
 
   eventState: [event, setEvent],
@@ -45,13 +43,17 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
   useEffect(() => {
     playerService.list().then(setPlayers)
     eventService.list().then(setEvents)
-    streamService.list().then(setStreams)
-  }, [playerService, eventService, streamService])
+  }, [playerService, eventService])
+
+  useEffect(() => {
+    if (event !== undefined) {
+      streamService.query({ eventId: event._id }).then(setStreams)
+    }
+  }, [streamService, event])
 
   const canStartCapturing =
     url !== '' &&
     title !== '' &&
-    date !== '' &&
     event !== undefined &&
     stream !== undefined &&
     topPlayer !== undefined &&
@@ -74,6 +76,21 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
         <Text mt={2}>Youtube URL</Text>
         <StateInput placeholder="Enter URL" value={url} dispatch={setUrl} />
 
+        <Text mt={2}>Event</Text>
+        <Select
+          placeholder="Select event"
+          onChange={e => setEvent(findEvent(e.target.value))}
+        >
+          {events.map(event => (
+            <option
+              key={event._id.toHexString()}
+              value={event._id.toHexString()}
+            >
+              {event.title}
+            </option>
+          ))}
+        </Select>
+
         <Text mt={2}>Stream</Text>
         <Select
           placeholder="Select stream"
@@ -92,30 +109,12 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
         <Text mt={2}>Match title</Text>
         <StateInput value={title} dispatch={setTitle} />
 
-        <Text mt={2}>Match date</Text>
-        <StateInput type="date" value={date} dispatch={setDate} />
-
         <Text mt={2}>Match target score</Text>
         <StateInput
           type="number"
           value={targetScore}
           dispatch={setTargetScore}
         />
-
-        <Text mt={2}>Event</Text>
-        <Select
-          placeholder="Select event"
-          onChange={e => setEvent(findEvent(e.target.value))}
-        >
-          {events.map(event => (
-            <option
-              key={event._id.toHexString()}
-              value={event._id.toHexString()}
-            >
-              {event.title}
-            </option>
-          ))}
-        </Select>
 
         <Text mt={2}>Top player</Text>
         <Select
