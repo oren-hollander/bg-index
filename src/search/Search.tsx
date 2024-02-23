@@ -1,15 +1,26 @@
-import { FC, useEffect, useRef, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import { Query } from './query.ts'
 import { SearchResults } from './SearchResults.tsx'
-import { Match } from '../matches/match.ts'
+import { Match } from '../services/match.ts'
 import { Box, Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import './input.css'
-import { MatchService } from '../matches/matchService.ts'
+import { MatchService } from '../services/matchService.ts'
 import { router } from '../router.ts'
-import { Credentials } from 'realm-web'
+import { CRUDService } from '../services/crud.ts'
+import { Stream } from '../services/stream.ts'
+import { Player } from '../services/players.ts'
 
-export const Search: FC = () => {
+interface SearchProps {
+  matchService: MatchService
+  streamService: CRUDService<Stream>
+  playerService: CRUDService<Player>
+}
+
+export const Search: FC<SearchProps> = ({
+  matchService,
+  streamService,
+  playerService
+}) => {
   const [stream, setStream] = useState('')
   const [title, setTitle] = useState('')
   const [fromDate, setFromDate] = useState('')
@@ -18,24 +29,16 @@ export const Search: FC = () => {
   const [player2, setPlayer2] = useState('')
   const [searchResults, setSearchResults] = useState<Match[]>([])
 
-  const matchService = useRef<MatchService>()
-
   useEffect(() => {
     const init = async () => {
-      const service = await MatchService.connect(Credentials.anonymous())
-      const matches = await service.query({})
+      const matches = await matchService.query({})
       setSearchResults(matches)
-      matchService.current = service
     }
 
     init().catch(console.error)
-  }, [])
+  }, [matchService])
 
   const performSearch = async () => {
-    if (!matchService.current) {
-      return
-    }
-
     const query: Query = {
       title: title === '' ? undefined : title,
       stream: stream === '' ? undefined : stream,
@@ -52,7 +55,7 @@ export const Search: FC = () => {
               ? player2
               : undefined
     }
-    const results = await matchService.current.query(query)
+    const results = await matchService.query(query)
     setSearchResults(results)
   }
 
@@ -131,7 +134,11 @@ export const Search: FC = () => {
 
       <Flex flex="1" overflowY="auto">
         <Box flex="1" bg={gray}>
-          <SearchResults matches={searchResults} />
+          <SearchResults
+            matches={searchResults}
+            streamService={streamService}
+            playerService={playerService}
+          />
         </Box>
       </Flex>
     </Flex>

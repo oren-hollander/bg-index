@@ -1,5 +1,5 @@
 import { FC, useEffect, useRef, useState } from 'react'
-import { Match, timestampToSeconds } from '../matches/match.ts'
+import { Match, Players, timestampToSeconds } from '../services/match.ts'
 import ReactPlayer from 'react-player/youtube'
 import {
   Box,
@@ -11,30 +11,54 @@ import {
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { Events } from './Events.tsx'
-import { MatchService } from '../matches/matchService.ts'
-import { Credentials } from 'realm-web'
+import { MatchService } from '../services/matchService.ts'
+import { CRUDService } from '../services/crud.ts'
+import { Player } from '../services/players.ts'
+import { Stream } from '../services/stream.ts'
+import { CollectionValue } from '../CollectionValue.tsx'
 
 interface ViewerProps {
+  matchService: MatchService
+  playerService: CRUDService<Player>
+  streamService: CRUDService<Stream>
   matchId: string
 }
 
-export const Viewer: FC<ViewerProps> = ({ matchId }) => {
+export const Viewer: FC<ViewerProps> = ({
+  matchId,
+  matchService,
+  streamService,
+  playerService
+}) => {
   const playerRef = useRef<ReactPlayer>(null)
   const [playing, setPlaying] = useState(true)
 
   const [match, setMatch] = useState<Match>()
+  const [players, setPlayers] = useState<Players>()
+  const [streamUrl, setStreamUrl] = useState<string>()
 
   const eventsDisclosure = useDisclosure()
 
   useEffect(() => {
     const init = async () => {
-      const matchService = await MatchService.connect(Credentials.anonymous())
       const match = await matchService.getMatch(matchId)
       setMatch(match)
+      if (match) {
+        const topPlayer = await playerService.get(match.playerIds.top)
+        const bottomPlayer = await playerService.get(match.playerIds.bottom)
+        if (topPlayer && bottomPlayer) {
+          setPlayers({ top: topPlayer, bottom: bottomPlayer })
+        }
+
+        const stream = await streamService.get(match.streamId)
+        if (stream) {
+          setStreamUrl(stream.url)
+        }
+      }
     }
 
     init().catch(console.error)
-  }, [matchId])
+  }, [matchService, playerService, streamService, matchId])
 
   const jump = (timestamp: string) => {
     const seconds = timestampToSeconds(timestamp)
@@ -61,14 +85,19 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
               Jump...
             </Button>
           </Box>
-          {match && (
+          {match && players && (
             <Box>
               <Text fontSize="xl">
-                {match.title}, {new Date(match.date).toDateString()}
+                {match.title},
+                <CollectionValue
+                  service={streamService}
+                  id={match.streamId}
+                  fieldName="date"
+                />
               </Text>
               <Text>
-                {match.players.top.full} vs. {match.players.bottom.full}, Match
-                to {match.targetScore}
+                {players.top.fullName} vs. {players.bottom.fullName}, Match to{' '}
+                {match.targetScore}
               </Text>
             </Box>
           )}
@@ -76,19 +105,24 @@ export const Viewer: FC<ViewerProps> = ({ matchId }) => {
         </Flex>
       </Box>
       {match && (
-        <Events match={match} disclosure={eventsDisclosure} jump={jump} />
+        <Events
+          match={match}
+          disclosure={eventsDisclosure}
+          playerService={playerService}
+          jump={jump}
+        />
       )}
 
       <Flex flex="1" bg={gray}>
         <Box flex="1">
-          {match && (
+          {match && streamUrl && (
             <ReactPlayer
               width="100%"
               height="100%"
               ref={playerRef}
               playing={playing}
               onStart={start}
-              url={match.url}
+              url={streamUrl}
               controls={true}
             />
           )}

@@ -1,4 +1,6 @@
 import { BSON } from 'realm-web'
+import ObjectId = BSON.ObjectId
+import { Player } from './players.ts'
 
 export function secondsToTimestamp(seconds: number): string {
   if (seconds < 60) {
@@ -48,16 +50,14 @@ export const timestampToSeconds = (time: string): number => {
   }
 }
 
-export type Players<T> = Record<'top' | 'bottom', T>
-
-export interface Name {
-  full: string
-  short: string
+export interface Players {
+  top: Player
+  bottom: Player
 }
 
-export interface PlayerNames {
-  top: Name
-  bottom: Name
+export interface PlayerIds {
+  top: ObjectId
+  bottom: ObjectId
 }
 
 export interface PlayerScores {
@@ -91,12 +91,9 @@ export interface Game {
 }
 
 export interface NewMatch {
-  contributor: string
-  url: string
-  stream: string
+  streamId: ObjectId
   title: string
-  date: string
-  players: PlayerNames
+  playerIds: PlayerIds
   targetScore: number
   games: Game[]
 }

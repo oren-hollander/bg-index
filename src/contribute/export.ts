@@ -1,13 +1,12 @@
-import { Game, GameEvent, NewMatch, PlayerNames } from '../matches/match.ts'
+import { Game, GameEvent, NewMatch, PlayerIds } from '../services/match.ts'
+import { Stream } from '../services/stream.ts'
 
 export const getExportedMatch = (
-  url: string,
-  stream: string,
+  stream: Stream,
   title: string,
-  date: string,
   targetScore: number,
   events: GameEvent[],
-  players: PlayerNames
+  playerIds: PlayerIds
 ): NewMatch => {
   const games: Game[] = []
   let gameEvents: GameEvent[] = []
@@ -25,12 +24,9 @@ export const getExportedMatch = (
   }
 
   return {
-    url,
-    contributor: '',
     title,
-    stream,
-    date,
-    players,
+    streamId: stream._id,
+    playerIds,
     targetScore,
     games
   }

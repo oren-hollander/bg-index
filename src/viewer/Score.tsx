@@ -1,14 +1,15 @@
 import { FC } from 'react'
 import { Text } from '@chakra-ui/react'
-import { Name, Players } from '../matches/match.ts'
+import { Players, PlayerScores } from '../services/match.ts'
 
 interface ScoreProps {
-  names: Players<Name>
-  scores: Players<number>
+  players: Players
+  scores: PlayerScores
 }
 
-export const Score: FC<ScoreProps> = ({ names, scores }) => (
+export const Score: FC<ScoreProps> = ({ players, scores }) => (
   <Text>
-    {names.top.short}: {scores.top} / {names.bottom.short}: {scores.bottom}
+    {players.top.shortName}: {scores.top} / {players.bottom.shortName}:{' '}
+    {scores.bottom}
   </Text>
 )

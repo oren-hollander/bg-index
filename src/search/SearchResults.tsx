@@ -1,14 +1,24 @@
 import { FC } from 'react'
-import { Match } from '../matches/match.ts'
+import { Match } from '../services/match.ts'
 import { Box, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { router } from '../router.ts'
+import { CollectionValue } from '../CollectionValue.tsx'
+import { Stream } from '../services/stream.ts'
+import { CRUDService } from '../services/crud.ts'
+import { Player } from '../services/players.ts'
 
 interface SearchResultsProps {
   matches: Match[]
+  streamService: CRUDService<Stream>
+  playerService: CRUDService<Player>
 }
 
-export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
+export const SearchResults: FC<SearchResultsProps> = ({
+  matches,
+  streamService,
+  playerService
+}) => {
   const show = (matchId: string) => {
     router.push('Match', { matchId })
   }
@@ -39,12 +49,34 @@ export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
               onClick={() => show(match._id.toHexString())}
               cursor="pointer"
             >
-              <Td borderColor="gray.600">{match.stream}</Td>
-              <Td borderColor="gray.600">{match.title}</Td>
-              <Td borderColor="gray.600">{match.date}</Td>
               <Td borderColor="gray.600">
-                {match.players.top.full} vs. {match.players.bottom.full}, match
-                to {match.targetScore}
+                <CollectionValue
+                  service={streamService}
+                  id={match.streamId}
+                  fieldName="title"
+                />
+              </Td>
+              <Td borderColor="gray.600">{match.title}</Td>
+              <Td borderColor="gray.600">
+                <CollectionValue
+                  service={streamService}
+                  id={match.streamId}
+                  fieldName="date"
+                />
+              </Td>
+              <Td borderColor="gray.600">
+                <CollectionValue
+                  service={playerService}
+                  id={match.playerIds.top}
+                  fieldName="fullName"
+                />
+                {' vs. '}
+                <CollectionValue
+                  service={playerService}
+                  id={match.playerIds.bottom}
+                  fieldName="fullName"
+                />
+                , Match to {match.targetScore}
               </Td>
             </Tr>
           ))}

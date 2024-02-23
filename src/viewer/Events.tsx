@@ -1,4 +1,4 @@
-import { FC, useState } from 'react'
+import { FC, useEffect, useState } from 'react'
 import {
   Box,
   Drawer,
@@ -20,13 +20,21 @@ import {
   UseDisclosureReturn
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { EventKind, GameEvent, Match, ScoreEvent } from '../matches/match.ts'
+import {
+  EventKind,
+  GameEvent,
+  Match,
+  Players,
+  ScoreEvent
+} from '../services/match.ts'
 import { Score } from './Score.tsx'
 import { take } from 'lodash/fp'
+import { CRUDService } from '../services/crud.ts'
+import { Player } from '../services/players.ts'
 
 const getEventText = (kind: EventKind): string => `${kind}s`
 
-const getEventDescription = (match: Match, event: GameEvent): string => {
+const getEventDescription = (players: Players, event: GameEvent): string => {
   switch (event.kind) {
     case 'start':
       return 'Game starts'
@@ -36,18 +44,39 @@ const getEventDescription = (match: Match, event: GameEvent): string => {
     case 'take':
     case 'drop':
     case 'win':
-      return `${match.players[event.player].short} ${getEventText(event.kind)}`
+      return `${players[event.player].shortName} ${getEventText(event.kind)}`
   }
 }
 
 interface EventsProps {
   match: Match
   disclosure: UseDisclosureReturn
+  playerService: CRUDService<Player>
   jump(timestamp: string): void
 }
 
-export const Events: FC<EventsProps> = ({ match, disclosure, jump }) => {
+export const Events: FC<EventsProps> = ({
+  match,
+  disclosure,
+  playerService,
+  jump
+}) => {
   const [spoilerProtection, setSpoilerProtection] = useState(true)
+  const [players, setPlayers] = useState<Players>()
+
+  useEffect(() => {
+    const fetchPlayers = async () => {
+      const [top, bottom] = await Promise.all([
+        playerService.get(match.playerIds.top),
+        playerService.get(match.playerIds.bottom)
+      ])
+      if (top && bottom) {
+        setPlayers({ top, bottom })
+      }
+    }
+
+    fetchPlayers().catch(console.error)
+  })
 
   const getGameEvents = (events: GameEvent[]): GameEvent[] => {
     if (spoilerProtection) {
@@ -81,12 +110,12 @@ export const Events: FC<EventsProps> = ({ match, disclosure, jump }) => {
           {match.games.map((game, i) => (
             <Box key={`game-${i + 1}`} marginTop={5}>
               <Text fontSize="xl">Game #{i + 1}</Text>
-              {!spoilerProtection && (
+              {!spoilerProtection && players && (
                 <Score
                   scores={
                     (game.events[game.events.length - 1] as ScoreEvent).score
                   }
-                  names={match.players}
+                  players={players}
                 />
               )}
               <TableContainer marginTop={3}>
@@ -119,7 +148,7 @@ export const Events: FC<EventsProps> = ({ match, disclosure, jump }) => {
                           {event.timestamp}
                         </Td>
                         <Td borderColor="gray.500">
-                          {getEventDescription(match, event)}
+                          {players && getEventDescription(players, event)}
                         </Td>
                       </Tr>
                     ))}

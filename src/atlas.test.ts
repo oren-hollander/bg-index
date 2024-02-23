@@ -1,6 +1,6 @@
 import { test } from 'vitest'
 import { App, Credentials, BSON } from 'realm-web'
-import { Match } from './matches/match.ts'
+import { Match } from './services/match.ts'
 
 test.skip('atlas', async () => {
   const app = new App({ id: 'bg-index-wsvuk' })

@@ -16,16 +16,17 @@ import {
   useToast
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { NewMatch } from '../matches/match.ts'
-import { MatchService } from '../matches/matchService.ts'
-import { Credentials } from 'realm-web'
+import { NewMatch } from '../services/match.ts'
+import { MatchService } from '../services/matchService.ts'
 
 interface ExportMatchProps {
+  matchService: MatchService
   match: NewMatch
   disclosure: UseDisclosureReturn
 }
 
 export const ExportMatch: FC<ExportMatchProps> = ({
+  matchService,
   match,
   disclosure: { onClose, isOpen }
 }) => {
@@ -35,13 +36,8 @@ export const ExportMatch: FC<ExportMatchProps> = ({
 
   const insertMatch = async () => {
     try {
-      const matchService = await MatchService.connect(
-        Credentials.emailPassword(email, password)
-      )
-      await matchService.addMatch({
-        ...match,
-        contributor: email
-      })
+      await matchService.addMatch(match)
+
       toast({
         title: 'Match successfully added',
         status: 'success',

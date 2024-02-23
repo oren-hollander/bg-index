@@ -1,0 +1,5 @@
+Contribute - items in event list should transport the video stream
+Login at the beginning of Contribute and stay logged in
+Players collection
+Events collection
+Edit contribution

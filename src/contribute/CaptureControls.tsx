@@ -5,7 +5,7 @@ import {
   GameEvent,
   secondsToTimestamp,
   timestampToSeconds
-} from '../matches/match.ts'
+} from '../services/match.ts'
 import {
   AttachmentIcon,
   CheckCircleIcon,

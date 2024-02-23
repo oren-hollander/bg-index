@@ -1,7 +1,7 @@
 import { FC, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { OnProgressProps } from 'react-player/base'
-import { GameEvent, NewMatch, timestampToSeconds } from '../matches/match.ts'
+import { GameEvent, NewMatch, timestampToSeconds } from '../services/match.ts'
 import { Box, Button, Flex, useDisclosure } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { filter, sortBy } from 'lodash/fp'
@@ -10,8 +10,25 @@ import { CaptureControls } from './CaptureControls.tsx'
 import { getExportedMatch } from './export.ts'
 import { EventList } from './EventList.tsx'
 import { ExportMatch } from './ExportMatch.tsx'
+import { MatchService } from '../services/matchService.ts'
+import { Player } from '../services/players.ts'
+import { Event } from '../services/events.ts'
+import { CRUDService } from '../services/crud.ts'
+import { Stream } from '../services/stream.ts'
 
-export const Contribute: FC = () => {
+interface ContributeProps {
+  playerService: CRUDService<Player>
+  eventService: CRUDService<Event>
+  streamService: CRUDService<Stream>
+  matchService: MatchService
+}
+
+export const Contribute: FC<ContributeProps> = ({
+  matchService,
+  playerService,
+  eventService,
+  streamService
+}) => {
   const playerRef = useRef<ReactPlayer>(null)
 
   const [captureUrl, setCaptureUrl] = useState<string>('')
@@ -19,14 +36,14 @@ export const Contribute: FC = () => {
   const [progress, setProgress] = useState(0)
 
   const [url, setUrl] = useState('')
-  const [stream, setStream] = useState('')
+  const [stream, setStream] = useState<Stream>()
   const [title, setTitle] = useState('')
   const [date, setDate] = useState('')
   const [targetScore, setTargetScore] = useState('')
-  const [topPlayerFullName, setTopPlayerFullName] = useState('')
-  const [topPlayerShortName, setTopPlayerShortName] = useState('')
-  const [bottomPlayerFullName, setBottomPlayerFullName] = useState('')
-  const [bottomPlayerShortName, setBottomPlayerShortName] = useState('')
+
+  const [event, setEvent] = useState<Event>()
+  const [topPlayer, setTopPlayer] = useState<Player>()
+  const [bottomPlayer, setBottomPlayer] = useState<Player>()
 
   const [topPlayerScore, setTopPlayerScore] = useState('0')
   const [bottomPlayerScore, setBottomPlayerScore] = useState('0')
@@ -58,26 +75,16 @@ export const Contribute: FC = () => {
     }
   }
 
-  const exportMatch = () => {
+  const exportMatch = async () => {
+    if (!topPlayer || !bottomPlayer || !stream) {
+      return
+    }
+
     setExportedMatch(
-      getExportedMatch(
-        url,
-        stream,
-        title,
-        date,
-        Number.parseInt(targetScore),
-        events,
-        {
-          top: {
-            full: topPlayerFullName,
-            short: topPlayerShortName
-          },
-          bottom: {
-            full: bottomPlayerFullName,
-            short: bottomPlayerShortName
-          }
-        }
-      )
+      getExportedMatch(stream, title, Number.parseInt(targetScore), events, {
+        top: topPlayer._id,
+        bottom: bottomPlayer._id
+      })
     )
 
     exportMatchDisclosure.onOpen()
@@ -99,7 +106,11 @@ export const Contribute: FC = () => {
       </Box>
 
       {exportedMatch && (
-        <ExportMatch match={exportedMatch} disclosure={exportMatchDisclosure} />
+        <ExportMatch
+          match={exportedMatch}
+          disclosure={exportMatchDisclosure}
+          matchService={matchService}
+        />
       )}
 
       <Box
@@ -112,24 +123,17 @@ export const Contribute: FC = () => {
       >
         {captureUrl === '' && (
           <MatchDetails
+            eventService={eventService}
+            playerService={playerService}
+            streamService={streamService}
             urlState={[url, setUrl]}
             streamState={[stream, setStream]}
             titleState={[title, setTitle]}
             dateState={[date, setDate]}
             targetScoreState={[targetScore, setTargetScore]}
-            topPlayerFullNameState={[topPlayerFullName, setTopPlayerFullName]}
-            topPlayerShortNameState={[
-              topPlayerShortName,
-              setTopPlayerShortName
-            ]}
-            bottomPlayerFullNameState={[
-              bottomPlayerFullName,
-              setBottomPlayerFullName
-            ]}
-            bottomPlayerShortNameState={[
-              bottomPlayerShortName,
-              setBottomPlayerShortName
-            ]}
+            eventState={[event, setEvent]}
+            topPlayerState={[topPlayer, setTopPlayer]}
+            bottomPlayerState={[bottomPlayer, setBottomPlayer]}
             startMatch={startMatch}
           />
         )}
@@ -151,8 +155,8 @@ export const Contribute: FC = () => {
                   bottomPlayerScore,
                   setBottomPlayerScore
                 ]}
-                topPlayerName={topPlayerShortName}
-                bottomPlayerName={bottomPlayerShortName}
+                topPlayerName={topPlayer?.shortName ?? ''}
+                bottomPlayerName={bottomPlayer?.shortName ?? ''}
                 events={events}
                 addEvent={addEvent}
                 exportMatch={exportMatch}
@@ -161,8 +165,8 @@ export const Contribute: FC = () => {
             <Box overflowY="auto">
               <EventList
                 events={events}
-                topPlayerName={topPlayerShortName}
-                bottomPlayerName={bottomPlayerShortName}
+                topPlayerName={topPlayer?.shortName ?? ''}
+                bottomPlayerName={bottomPlayer?.shortName ?? ''}
                 deleteEvent={deleteEvent}
               />
             </Box>

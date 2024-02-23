@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { SmallCloseIcon } from '@chakra-ui/icons'
-import { GameEvent } from '../matches/match.ts'
+import { GameEvent } from '../services/match.ts'
 import { FC, ReactNode } from 'react'
 import { reverse } from 'lodash/fp'
 
