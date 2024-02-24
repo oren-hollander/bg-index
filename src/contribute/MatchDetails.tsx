@@ -1,8 +1,8 @@
 import { FC, useEffect, useState } from 'react'
 import { Box, Button, Select, Text } from '@chakra-ui/react'
 import { State, StateInput } from './StateInput.tsx'
-import { Player } from '../services/players.ts'
-import { Event } from '../services/events.ts'
+import { Player } from '../services/player.ts'
+import { Event } from '../services/event.ts'
 import { CRUDService } from '../services/crud.ts'
 import { Stream } from '../services/stream.ts'
 

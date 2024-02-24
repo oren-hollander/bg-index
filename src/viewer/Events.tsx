@@ -30,7 +30,7 @@ import {
 import { Score } from './Score.tsx'
 import { take } from 'lodash/fp'
 import { CRUDService } from '../services/crud.ts'
-import { Player } from '../services/players.ts'
+import { Player } from '../services/player.ts'
 
 const getEventText = (kind: EventKind): string => `${kind}s`
 

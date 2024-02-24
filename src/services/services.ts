@@ -1,12 +1,12 @@
 import { CRUDService } from './crud.ts'
-import { Event } from './events.ts'
-import { Player } from './players.ts'
-import { MatchService } from './matchService.ts'
+import { Event } from './event.ts'
+import { Player } from './player.ts'
 import { Stream } from './stream.ts'
+import { Match } from './match.ts'
 
 export interface Services {
-  events: CRUDService<Event>
-  streams: CRUDService<Stream>
-  players: CRUDService<Player>
-  matches: MatchService
+  eventService: CRUDService<Event>
+  streamService: CRUDService<Stream>
+  playerService: CRUDService<Player>
+  matchService: CRUDService<Match>
 }

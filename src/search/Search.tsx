@@ -1,28 +1,20 @@
 import { FC, useEffect, useState } from 'react'
-import { Query } from './query.ts'
+import { DateQuery, Query, queryMatches } from './query.ts'
 import { SearchResults } from './SearchResults.tsx'
 import { Match } from '../services/match.ts'
 import { Box, Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { MatchService } from '../services/matchService.ts'
 import { router } from '../router.ts'
-import { CRUDService } from '../services/crud.ts'
-import { Stream } from '../services/stream.ts'
-import { Player } from '../services/players.ts'
+import { Services } from '../services/services.ts'
 
 interface SearchProps {
-  matchService: MatchService
-  streamService: CRUDService<Stream>
-  playerService: CRUDService<Player>
+  services: Services
 }
 
-export const Search: FC<SearchProps> = ({
-  matchService,
-  streamService,
-  playerService
-}) => {
+export const Search: FC<SearchProps> = ({ services }) => {
+  const [event, setEvent] = useState('')
   const [stream, setStream] = useState('')
-  const [title, setTitle] = useState('')
+  const [match, setMatch] = useState('')
   const [fromDate, setFromDate] = useState('')
   const [toDate, setToDate] = useState('')
   const [player1, setPlayer1] = useState('')
@@ -31,21 +23,34 @@ export const Search: FC<SearchProps> = ({
 
   useEffect(() => {
     const init = async () => {
-      const matches = await matchService.query({})
+      const matches = await services.matchService.query({})
       setSearchResults(matches)
     }
 
     init().catch(console.error)
-  }, [matchService])
+  }, [services.matchService])
+
+  const getDateQuery = (
+    fromDate: string,
+    toDate: string
+  ): DateQuery | undefined => {
+    if (fromDate === '' && toDate !== '') {
+      return { from: fromDate, to: toDate }
+    }
+    if (fromDate !== '') {
+      return { from: fromDate }
+    }
+    if (toDate !== '') {
+      return { to: toDate }
+    }
+  }
 
   const performSearch = async () => {
     const query: Query = {
-      title: title === '' ? undefined : title,
+      event: event === '' ? undefined : event,
       stream: stream === '' ? undefined : stream,
-      date:
-        fromDate !== '' && toDate !== ''
-          ? { from: new Date(fromDate), to: new Date(toDate) }
-          : undefined,
+      match: match === '' ? undefined : match,
+      date: getDateQuery(fromDate, toDate),
       players:
         player1 !== '' && player2 !== ''
           ? [player1, player2]
@@ -55,7 +60,7 @@ export const Search: FC<SearchProps> = ({
               ? player2
               : undefined
     }
-    const results = await matchService.query(query)
+    const results = await queryMatches(services, query)
     setSearchResults(results)
   }
 
@@ -63,6 +68,14 @@ export const Search: FC<SearchProps> = ({
     <Flex direction="column" h="100vh">
       <Box bg={gray} w="100%" p={4} color="white">
         <Flex direction="row">
+          <Stack paddingEnd={2}>
+            <Text color={white}>Event</Text>
+            <Input
+              type="text"
+              value={event}
+              onChange={e => setEvent(e.target.value)}
+            />
+          </Stack>
           <Stack paddingEnd={2}>
             <Text color={white}>Stream</Text>
             <Input
@@ -72,11 +85,11 @@ export const Search: FC<SearchProps> = ({
             />
           </Stack>
           <Stack paddingEnd={2}>
-            <Text color={white}>Title</Text>
+            <Text color={white}>Match</Text>
             <Input
               type="text"
-              value={title}
-              onChange={e => setTitle(e.target.value)}
+              value={match}
+              onChange={e => setMatch(e.target.value)}
             />
           </Stack>
           <Stack paddingEnd={2}>
@@ -134,11 +147,7 @@ export const Search: FC<SearchProps> = ({
 
       <Flex flex="1" overflowY="auto">
         <Box flex="1" bg={gray}>
-          <SearchResults
-            matches={searchResults}
-            streamService={streamService}
-            playerService={playerService}
-          />
+          <SearchResults matches={searchResults} services={services} />
         </Box>
       </Flex>
     </Flex>

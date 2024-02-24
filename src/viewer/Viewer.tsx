@@ -11,17 +11,18 @@ import {
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { Events } from './Events.tsx'
-import { MatchService } from '../services/matchService.ts'
 import { CRUDService } from '../services/crud.ts'
-import { Player } from '../services/players.ts'
+import { Player } from '../services/player.ts'
 import { Stream } from '../services/stream.ts'
 import { CollectionValue } from '../CollectionValue.tsx'
+import { BSON } from 'realm-web'
+import ObjectId = BSON.ObjectId
 
 interface ViewerProps {
-  matchService: MatchService
+  matchService: CRUDService<Match>
   playerService: CRUDService<Player>
   streamService: CRUDService<Stream>
-  matchId: string
+  matchId: ObjectId
 }
 
 export const Viewer: FC<ViewerProps> = ({
@@ -41,7 +42,7 @@ export const Viewer: FC<ViewerProps> = ({
 
   useEffect(() => {
     const init = async () => {
-      const match = await matchService.getMatch(matchId)
+      const match = await matchService.get(matchId)
       setMatch(match)
       if (match) {
         const topPlayer = await playerService.get(match.playerIds.top)

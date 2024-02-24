@@ -4,20 +4,17 @@ import { Box, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { router } from '../router.ts'
 import { CollectionValue } from '../CollectionValue.tsx'
-import { Stream } from '../services/stream.ts'
-import { CRUDService } from '../services/crud.ts'
-import { Player } from '../services/players.ts'
+import { EventTitle } from './EventTitle.tsx'
+import { Services } from '../services/services.ts'
 
 interface SearchResultsProps {
   matches: Match[]
-  streamService: CRUDService<Stream>
-  playerService: CRUDService<Player>
+  services: Services
 }
 
 export const SearchResults: FC<SearchResultsProps> = ({
   matches,
-  streamService,
-  playerService
+  services
 }) => {
   const show = (matchId: string) => {
     router.push('Match', { matchId })
@@ -29,16 +26,19 @@ export const SearchResults: FC<SearchResultsProps> = ({
         <Thead>
           <Tr>
             <Th borderColor="gray.400" color={white}>
-              Stream
-            </Th>
-            <Th borderColor="gray.400" color={white}>
-              Title
-            </Th>
-            <Th borderColor="gray.400" color={white}>
               Date
             </Th>
             <Th borderColor="gray.400" color={white}>
+              Event
+            </Th>
+            <Th borderColor="gray.400" color={white}>
+              Stream
+            </Th>
+            <Th borderColor="gray.400" color={white}>
               Match
+            </Th>
+            <Th borderColor="gray.400" color={white}>
+              Players
             </Th>
           </Tr>
         </Thead>
@@ -51,32 +51,42 @@ export const SearchResults: FC<SearchResultsProps> = ({
             >
               <Td borderColor="gray.600">
                 <CollectionValue
-                  service={streamService}
+                  service={services.streamService}
+                  id={match.streamId}
+                  fieldName="date"
+                  format={value => new Date(value).toDateString()}
+                />
+              </Td>
+              <Td borderColor="gray.600">
+                <EventTitle
+                  services={services}
+                  streamId={match.streamId}
+                  fieldName="title"
+                />
+              </Td>
+              <Td borderColor="gray.600">
+                <CollectionValue
+                  service={services.streamService}
                   id={match.streamId}
                   fieldName="title"
                 />
               </Td>
-              <Td borderColor="gray.600">{match.title}</Td>
               <Td borderColor="gray.600">
-                <CollectionValue
-                  service={streamService}
-                  id={match.streamId}
-                  fieldName="date"
-                />
+                {match.title}, Match to {match.targetScore}
               </Td>
+
               <Td borderColor="gray.600">
                 <CollectionValue
-                  service={playerService}
+                  service={services.playerService}
                   id={match.playerIds.top}
                   fieldName="fullName"
                 />
                 {' vs. '}
                 <CollectionValue
-                  service={playerService}
+                  service={services.playerService}
                   id={match.playerIds.bottom}
                   fieldName="fullName"
                 />
-                , Match to {match.targetScore}
               </Td>
             </Tr>
           ))}

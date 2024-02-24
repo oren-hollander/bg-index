@@ -16,11 +16,11 @@ import {
   useToast
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { NewMatch } from '../services/match.ts'
-import { MatchService } from '../services/matchService.ts'
+import { Match, NewMatch } from '../services/match.ts'
+import { CRUDService } from '../services/crud.ts'
 
 interface ExportMatchProps {
-  matchService: MatchService
+  matchService: CRUDService<Match>
   match: NewMatch
   disclosure: UseDisclosureReturn
 }
@@ -36,7 +36,7 @@ export const ExportMatch: FC<ExportMatchProps> = ({
 
   const insertMatch = async () => {
     try {
-      await matchService.addMatch(match)
+      await matchService.add(match)
 
       toast({
         title: 'Match successfully added',

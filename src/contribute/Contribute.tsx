@@ -1,7 +1,12 @@
 import { FC, useRef, useState } from 'react'
 import ReactPlayer from 'react-player'
 import { OnProgressProps } from 'react-player/base'
-import { GameEvent, NewMatch, timestampToSeconds } from '../services/match.ts'
+import {
+  GameEvent,
+  Match,
+  NewMatch,
+  timestampToSeconds
+} from '../services/match.ts'
 import { Box, Button, Flex, useDisclosure } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { filter, sortBy } from 'lodash/fp'
@@ -10,9 +15,8 @@ import { CaptureControls } from './CaptureControls.tsx'
 import { getExportedMatch } from './export.ts'
 import { EventList } from './EventList.tsx'
 import { ExportMatch } from './ExportMatch.tsx'
-import { MatchService } from '../services/matchService.ts'
-import { Player } from '../services/players.ts'
-import { Event } from '../services/events.ts'
+import { Player } from '../services/player.ts'
+import { Event } from '../services/event.ts'
 import { CRUDService } from '../services/crud.ts'
 import { Stream } from '../services/stream.ts'
 
@@ -20,7 +24,7 @@ interface ContributeProps {
   playerService: CRUDService<Player>
   eventService: CRUDService<Event>
   streamService: CRUDService<Stream>
-  matchService: MatchService
+  matchService: CRUDService<Match>
 }
 
 export const Contribute: FC<ContributeProps> = ({

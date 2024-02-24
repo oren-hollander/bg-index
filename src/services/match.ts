@@ -1,6 +1,7 @@
 import { BSON } from 'realm-web'
 import ObjectId = BSON.ObjectId
-import { Player } from './players.ts'
+import { Player } from './player.ts'
+import { WithId } from './crud.ts'
 
 export function secondsToTimestamp(seconds: number): string {
   if (seconds < 60) {
@@ -98,6 +99,4 @@ export interface NewMatch {
   games: Game[]
 }
 
-export interface Match extends NewMatch {
-  _id: BSON.ObjectId
-}
+export type Match = WithId<NewMatch>
