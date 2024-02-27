@@ -3,11 +3,10 @@ import { Box, Button, Select, Text } from '@chakra-ui/react'
 import { State, StateInput } from './StateInput.tsx'
 import { Player } from '../services/player.ts'
 import { Event } from '../services/event.ts'
-import { CRUDService } from '../services/crud.ts'
 import { Stream } from '../services/stream.ts'
+import { useServices } from '../services/services.ts'
 
 interface MatchDetailsProps {
-  urlState: State<string>
   titleState: State<string>
   targetScoreState: State<string>
 
@@ -16,14 +15,10 @@ interface MatchDetailsProps {
   topPlayerState: State<Player | undefined>
   bottomPlayerState: State<Player | undefined>
 
-  startMatch: () => void
-  playerService: CRUDService<Player>
-  eventService: CRUDService<Event>
-  streamService: CRUDService<Stream>
+  createMatch: () => void
 }
 
 export const MatchDetails: FC<MatchDetailsProps> = ({
-  urlState: [url, setUrl],
   streamState: [stream, setStream],
   titleState: [title, setTitle],
   targetScoreState: [targetScore, setTargetScore],
@@ -31,18 +26,17 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
   eventState: [event, setEvent],
   topPlayerState: [topPlayer, setTopPlayer],
   bottomPlayerState: [bottomPlayer, setBottomPlayer],
-  playerService,
-  eventService,
-  streamService,
-  startMatch
+  createMatch
 }) => {
   const [players, setPlayers] = useState<Player[]>([])
   const [events, setEvents] = useState<Event[]>([])
   const [streams, setStreams] = useState<Stream[]>([])
 
+  const { playerService, eventService, streamService } = useServices()
+
   useEffect(() => {
-    playerService.list().then(setPlayers)
-    eventService.list().then(setEvents)
+    playerService.query({}, { sort: { fullName: 1 } }).then(setPlayers)
+    eventService.query({}, { sort: { title: 1 } }).then(setEvents)
   }, [playerService, eventService])
 
   useEffect(() => {
@@ -52,7 +46,6 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
   }, [streamService, event])
 
   const canStartCapturing =
-    url !== '' &&
     title !== '' &&
     event !== undefined &&
     stream !== undefined &&
@@ -73,9 +66,6 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
     players &&
     events && (
       <Box>
-        <Text mt={2}>Youtube URL</Text>
-        <StateInput placeholder="Enter URL" value={url} dispatch={setUrl} />
-
         <Text mt={2}>Event</Text>
         <Select
           placeholder="Select event"
@@ -150,9 +140,9 @@ export const MatchDetails: FC<MatchDetailsProps> = ({
           mt={4}
           colorScheme="green"
           isDisabled={!canStartCapturing}
-          onClick={startMatch}
+          onClick={createMatch}
         >
-          Start
+          Create
         </Button>
       </Box>
     )

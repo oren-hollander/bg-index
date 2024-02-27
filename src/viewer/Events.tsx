@@ -29,8 +29,7 @@ import {
 } from '../services/match.ts'
 import { Score } from './Score.tsx'
 import { take } from 'lodash/fp'
-import { CRUDService } from '../services/crud.ts'
-import { Player } from '../services/player.ts'
+import { usePlayerService } from '../services/services.ts'
 
 const getEventText = (kind: EventKind): string => `${kind}s`
 
@@ -51,18 +50,13 @@ const getEventDescription = (players: Players, event: GameEvent): string => {
 interface EventsProps {
   match: Match
   disclosure: UseDisclosureReturn
-  playerService: CRUDService<Player>
   jump(timestamp: string): void
 }
 
-export const Events: FC<EventsProps> = ({
-  match,
-  disclosure,
-  playerService,
-  jump
-}) => {
+export const Events: FC<EventsProps> = ({ match, disclosure, jump }) => {
   const [spoilerProtection, setSpoilerProtection] = useState(true)
   const [players, setPlayers] = useState<Players>()
+  const playerService = usePlayerService()
 
   useEffect(() => {
     const fetchPlayers = async () => {
@@ -110,14 +104,16 @@ export const Events: FC<EventsProps> = ({
           {match.games.map((game, i) => (
             <Box key={`game-${i + 1}`} marginTop={5}>
               <Text fontSize="xl">Game #{i + 1}</Text>
-              {!spoilerProtection && players && (
-                <Score
-                  scores={
-                    (game.events[game.events.length - 1] as ScoreEvent).score
-                  }
-                  players={players}
-                />
-              )}
+              {!spoilerProtection &&
+                players &&
+                game.events[game.events.length - 1].kind === 'score' && (
+                  <Score
+                    scores={
+                      (game.events[game.events.length - 1] as ScoreEvent).score
+                    }
+                    players={players}
+                  />
+                )}
               <TableContainer marginTop={3}>
                 <Table size="sm">
                   <Thead>

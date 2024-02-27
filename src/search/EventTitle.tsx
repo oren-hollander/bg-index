@@ -1,14 +1,14 @@
 import { FC, useEffect, useState } from 'react'
 import { BSON } from 'realm-web'
 import ObjectId = BSON.ObjectId
-import { Services } from '../services/services.ts'
+import { useServices } from '../services/services.ts'
 
 const useEventTitle = (
-  services: Services,
   streamId: ObjectId,
   fieldName: string
 ): string | undefined => {
   const [eventTitle, setEventTitle] = useState<string>()
+  const services = useServices()
 
   useEffect(() => {
     const fetchEventTitle = async () => {
@@ -28,15 +28,9 @@ const useEventTitle = (
 }
 
 interface EventTitleProps {
-  services: Services
   streamId: ObjectId
   fieldName: string
 }
 
-export const EventTitle: FC<EventTitleProps> = ({
-  services,
-  streamId,
-  fieldName
-}) => {
-  return useEventTitle(services, streamId, fieldName)
-}
+export const EventTitle: FC<EventTitleProps> = ({ streamId, fieldName }) =>
+  useEventTitle(streamId, fieldName)

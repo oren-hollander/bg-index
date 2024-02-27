@@ -32,7 +32,7 @@ export const AddDocument: FC<AddDocumentProps> = ({ fields, onAdd }) => {
         <Stack key={field.name} p="1em">
           <Text>{getFieldName(field.name)}</Text>
           <FieldEditor
-            fieldDefinition={field}
+            field={field}
             value={values[field.name]}
             onChange={(value: Value) =>
               setValues(values => ({ ...values, [field.name]: value }))

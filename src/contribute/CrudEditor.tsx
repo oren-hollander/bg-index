@@ -1,12 +1,13 @@
 import { FC, useCallback, useEffect, useState } from 'react'
 import { CRUDService, HasId } from '../services/crud.ts'
-import { Flex, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
+import { Box, Flex, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
 import { omit } from 'lodash/fp'
 import { AddDocument } from './AddDocument.tsx'
 import { getFieldName } from './getFieldName.ts'
 import { BSON } from 'realm-web'
 import { CollectionValue } from '../CollectionValue.tsx'
 import ObjectId = BSON.ObjectId
+import { gray, white } from '../colors.ts'
 
 export type Value = string | number | ObjectId
 export type Values = Record<string, Value>
@@ -14,6 +15,7 @@ export type Values = Record<string, Value>
 export interface RefFieldDefinition {
   type: 'ref'
   name: string
+  title: string
   service: CRUDService<HasId>
   displayFieldName: string
 }
@@ -26,7 +28,6 @@ export interface ValueFieldDefinition {
 }
 
 export type FieldDefinition = RefFieldDefinition | ValueFieldDefinition
-export type FieldType = FieldDefinition['type']
 
 interface FieldValueProps {
   field: FieldDefinition
@@ -57,52 +58,54 @@ interface CrudEditorProps {
 export const CrudEditor: FC<CrudEditorProps> = ({ fields, service }) => {
   const [documents, setDocuments] = useState<(Values & HasId)[]>([])
 
-  const fetchPlayers = useCallback(async () => {
-    const documents = await service.list()
+  const fetchDocuments = useCallback(async () => {
+    const documents = await service.query()
     setDocuments(documents as (Values & HasId)[])
   }, [service])
 
   useEffect(() => {
-    fetchPlayers().catch(console.error)
-  }, [fetchPlayers])
+    fetchDocuments().catch(console.error)
+  }, [fetchDocuments])
 
   const getValues = (document: Values & HasId): Values => omit('_id', document)
 
   const addDocument = async (values: Values) => {
     await service.add(values)
-    await fetchPlayers()
+    await fetchDocuments()
   }
 
   return (
-    <Flex direction="column">
-      <AddDocument fields={fields} onAdd={addDocument} />
-      {documents.length > 0 && (
-        <Flex flex="1">
-          <Table>
-            <Thead>
-              <Tr>
-                {Object.keys(getValues(documents[0])).map(key => (
-                  <Th key={key}>{getFieldName(key)}</Th>
-                ))}
-              </Tr>
-            </Thead>
+    <Flex direction="column" bg={gray} color={white} h="100vh">
+      <Box w="full">
+        <AddDocument fields={fields} onAdd={addDocument} />
+        {documents.length > 0 && (
+          <Flex flex="1">
+            <Table>
+              <Thead>
+                <Tr>
+                  {Object.keys(getValues(documents[0])).map(key => (
+                    <Th key={key}>{getFieldName(key)}</Th>
+                  ))}
+                </Tr>
+              </Thead>
 
-            <Tbody>
-              {documents.map(doc => {
-                return (
-                  <Tr key={doc._id.toHexString()}>
-                    {fields.map(field => (
-                      <Td key={field.name}>
-                        <FieldValue value={doc[field.name]} field={field} />
-                      </Td>
-                    ))}
-                  </Tr>
-                )
-              })}
-            </Tbody>
-          </Table>
-        </Flex>
-      )}
+              <Tbody>
+                {documents.map(doc => {
+                  return (
+                    <Tr key={doc._id.toHexString()}>
+                      {fields.map(field => (
+                        <Td key={field.name}>
+                          <FieldValue value={doc[field.name]} field={field} />
+                        </Td>
+                      ))}
+                    </Tr>
+                  )
+                })}
+              </Tbody>
+            </Table>
+          </Flex>
+        )}
+      </Box>
     </Flex>
   )
 }

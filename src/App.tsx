@@ -1,114 +1,39 @@
-import { router } from './router.ts'
-import { Viewer } from './viewer/Viewer.tsx'
-import { Contribute } from './contribute/Contribute.tsx'
-import { CrudEditor } from './contribute/CrudEditor.tsx'
+import React, { FC, useEffect, useState } from 'react'
+import { Services, ServicesProvider } from './services/services.ts'
+import { AuthService } from './services/authService.ts'
 import { CRUDService } from './services/crud.ts'
-import { BSON, Credentials } from 'realm-web'
-import { FC, useEffect, useRef, useState } from 'react'
-import { Services } from './services/services.ts'
-import { getDatabase } from './services/database.ts'
-import { Match } from './services/match.ts'
-import { Player } from './services/player.ts'
-import { Event } from './services/event.ts'
-import { Search } from './search/Search.tsx'
-import ObjectId = BSON.ObjectId
-import { Stream } from './services/stream.ts'
+import { ChakraProvider } from '@chakra-ui/react'
+import Routing from './Routing.tsx'
+import { store } from './main.tsx'
 
-const App: FC = () => {
-  const services = useRef<Services>()
-  const [ready, setReady] = useState(false)
+export const App: FC = () => {
+  const [services, setServices] = useState<Services>()
 
   useEffect(() => {
     const init = async () => {
-      const credentials = Credentials.anonymous()
-      const database = await getDatabase(credentials)
+      const authService = await AuthService.create()
+      store.setState(() => ({ signedIn: authService.isSignedIn() }))
 
-      services.current = {
-        eventService: new CRUDService(database.collection<Event>('events')),
-        playerService: new CRUDService(database.collection<Player>('players')),
-        matchService: new CRUDService(database.collection<Match>('matches')),
-        streamService: new CRUDService(database.collection<Stream>('streams'))
-      }
-
-      setReady(true)
+      setServices({
+        authService,
+        eventService: new CRUDService('events', authService),
+        playerService: new CRUDService('players', authService),
+        matchService: new CRUDService('matches', authService),
+        streamService: new CRUDService('streams', authService)
+      })
     }
-
     init().catch(console.error)
   }, [])
 
-  const route = router.useRoute([
-    'Home',
-    'Match',
-    'Contribute',
-    'Players',
-    'Events',
-    'Streams'
-  ])
-
-  if (!ready || !services.current) {
-    return null
-  }
-
-  switch (route?.name) {
-    case 'Home':
-      return <Search services={services.current} />
-    case 'Match':
-      return (
-        <Viewer
-          matchId={ObjectId.createFromHexString(route.params.matchId)}
-          matchService={services.current.matchService}
-          playerService={services.current.playerService}
-          streamService={services.current.streamService}
-        />
-      )
-    case 'Contribute':
-      return (
-        <Contribute
-          matchService={services.current.matchService}
-          playerService={services.current.playerService}
-          eventService={services.current.eventService}
-          streamService={services.current.streamService}
-        />
-      )
-    case 'Players':
-      return (
-        <CrudEditor
-          fields={[
-            { name: 'fullName', type: 'string' },
-            { name: 'shortName', type: 'string' }
-          ]}
-          service={services.current.playerService}
-        />
-      )
-    case 'Events':
-      return (
-        <CrudEditor
-          fields={[{ name: 'title', type: 'string' }]}
-          service={services.current.eventService}
-        />
-      )
-    case 'Streams':
-      return (
-        <CrudEditor
-          fields={[
-            { name: 'title', type: 'string' },
-            { name: 'url', type: 'string' },
-            { name: 'date', type: 'string' },
-            {
-              name: 'eventId',
-              type: 'ref',
-              service: services.current.eventService,
-              displayFieldName: 'title'
-            }
-          ]}
-          service={services.current.streamService}
-        />
-      )
-
-    default:
-      router.replace('Home')
-      return null
-  }
+  return (
+    services && (
+      <ServicesProvider value={services}>
+        <React.StrictMode>
+          <ChakraProvider>
+            <Routing />
+          </ChakraProvider>
+        </React.StrictMode>
+      </ServicesProvider>
+    )
+  )
 }
-
-export default App

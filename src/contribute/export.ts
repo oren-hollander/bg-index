@@ -1,33 +1,28 @@
-import { Game, GameEvent, NewMatch, PlayerIds } from '../services/match.ts'
-import { Stream } from '../services/stream.ts'
+import { Game, GameEvent } from '../services/match.ts'
 
-export const getExportedMatch = (
-  stream: Stream,
-  title: string,
-  targetScore: number,
-  events: GameEvent[],
-  playerIds: PlayerIds
-): NewMatch => {
+export const getGames = (events: GameEvent[]): Game[] => {
   const games: Game[] = []
   let gameEvents: GameEvent[] = []
 
   for (const event of events) {
-    gameEvents.push(event)
-    switch (event.kind) {
-      case 'score':
-        games.push({
-          events: gameEvents
-        })
-        gameEvents = []
-        break
+    if (event.kind === 'start' && gameEvents.length > 0) {
+      games.push({
+        events: gameEvents
+      })
+      gameEvents = []
     }
+    gameEvents.push(event)
   }
 
-  return {
-    title,
-    streamId: stream._id,
-    playerIds,
-    targetScore,
-    games
+  if (gameEvents.length > 0) {
+    games.push({
+      events: gameEvents
+    })
   }
+
+  return games
+}
+
+export const getGameEvents = (games: Game[]): GameEvent[] => {
+  return games.flatMap(game => game.events)
 }

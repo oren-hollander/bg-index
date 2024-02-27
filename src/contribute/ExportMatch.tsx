@@ -16,23 +16,22 @@ import {
   useToast
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
-import { Match, NewMatch } from '../services/match.ts'
-import { CRUDService } from '../services/crud.ts'
+import { NewMatch } from '../services/match.ts'
+import { useMatchService } from '../services/services.ts'
 
 interface ExportMatchProps {
-  matchService: CRUDService<Match>
   match: NewMatch
   disclosure: UseDisclosureReturn
 }
 
 export const ExportMatch: FC<ExportMatchProps> = ({
-  matchService,
   match,
   disclosure: { onClose, isOpen }
 }) => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const toast = useToast()
+  const matchService = useMatchService()
 
   const insertMatch = async () => {
     try {

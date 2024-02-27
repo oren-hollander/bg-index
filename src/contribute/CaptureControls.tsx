@@ -24,7 +24,7 @@ interface CaptureControlsProps {
   topPlayerName: string
   bottomPlayerName: string
   addEvent(event: GameEvent): void
-  exportMatch(): void
+  updateMatch(): void
 }
 
 export const CaptureControls: FC<CaptureControlsProps> = ({

@@ -5,13 +5,11 @@ import { Match } from '../services/match.ts'
 import { Box, Button, Flex, Input, Stack, Text } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { router } from '../router.ts'
-import { Services } from '../services/services.ts'
+import { useServices } from '../services/services.ts'
+import { useStore } from '@tanstack/react-store'
+import { store } from '../main.tsx'
 
-interface SearchProps {
-  services: Services
-}
-
-export const Search: FC<SearchProps> = ({ services }) => {
+export const Search: FC = () => {
   const [event, setEvent] = useState('')
   const [stream, setStream] = useState('')
   const [match, setMatch] = useState('')
@@ -20,15 +18,36 @@ export const Search: FC<SearchProps> = ({ services }) => {
   const [player1, setPlayer1] = useState('')
   const [player2, setPlayer2] = useState('')
   const [searchResults, setSearchResults] = useState<Match[]>([])
+  const signedIn = useStore(store, state => state.signedIn)
+
+  const services = useServices()
 
   useEffect(() => {
     const init = async () => {
-      const matches = await services.matchService.query({})
+      store.setState(state => ({
+        ...state,
+        signedIn: services.authService.isSignedIn()
+      }))
+
+      // const matches = await services.matchService.query()
+      const matches = await services.matchService.aggregate([
+        {
+          $lookup: {
+            from: 'streams',
+            localField: 'streamId',
+            foreignField: '_id',
+            as: 'joinedStreams'
+          }
+        },
+        { $unwind: '$joinedStreams' },
+        { $sort: { 'joinedStreams.date': -1 } }
+      ])
+
       setSearchResults(matches)
     }
 
     init().catch(console.error)
-  }, [services.matchService])
+  }, [services.matchService, services.authService])
 
   const getDateQuery = (
     fromDate: string,
@@ -62,6 +81,18 @@ export const Search: FC<SearchProps> = ({ services }) => {
     }
     const results = await queryMatches(services, query)
     setSearchResults(results)
+  }
+
+  const signInOrOut = async () => {
+    if (services.authService.isSignedIn()) {
+      await services.authService.signOut()
+      store.setState(state => ({
+        ...state,
+        signedIn: false
+      }))
+    } else {
+      router.push('Login')
+    }
   }
 
   return (
@@ -131,15 +162,20 @@ export const Search: FC<SearchProps> = ({ services }) => {
               Search
             </Button>
           </Stack>
-
           <Stack paddingEnd={2}>
             <Text>&nbsp;</Text>
             <Button
               colorScheme="green"
               variant="outline"
-              onClick={() => router.push('Contribute')}
+              onClick={() => router.push('CreateMatch')}
             >
-              Contribute
+              Create
+            </Button>
+          </Stack>{' '}
+          <Stack paddingEnd={2}>
+            <Text>&nbsp;</Text>
+            <Button colorScheme="red" variant="outline" onClick={signInOrOut}>
+              {signedIn ? 'Sign Out' : 'Sign In'}
             </Button>
           </Stack>
         </Flex>
@@ -147,7 +183,7 @@ export const Search: FC<SearchProps> = ({ services }) => {
 
       <Flex flex="1" overflowY="auto">
         <Box flex="1" bg={gray}>
-          <SearchResults matches={searchResults} services={services} />
+          <SearchResults matches={searchResults} />
         </Box>
       </Flex>
     </Flex>

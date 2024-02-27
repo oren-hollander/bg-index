@@ -1,36 +1,29 @@
-import { FieldDefinition, Value } from './CrudEditor.tsx'
+import { FieldDefinition, RefFieldDefinition, Value } from './CrudEditor.tsx'
 import { FC, useEffect, useState } from 'react'
 import { Input, Select } from '@chakra-ui/react'
 import { toNumber } from 'lodash/fp'
 import { BSON } from 'realm-web'
 
-import { CRUDService, HasId } from '../services/crud.ts'
+import { HasId } from '../services/crud.ts'
 import ObjectId = BSON.ObjectId
 import Document = BSON.Document
 
 interface SelectRefProps {
-  service: CRUDService<HasId>
-  displayFieldName: string
+  field: RefFieldDefinition
   value: Value | undefined
   onChange: (value: ObjectId) => void
 }
 
-const SelectRef: FC<SelectRefProps> = ({
-  service,
-  displayFieldName,
-  value,
-  onChange
-}) => {
+const SelectRef: FC<SelectRefProps> = ({ field, value, onChange }) => {
   const [documents, setDocuments] = useState<(Document & HasId)[]>([])
 
   useEffect(() => {
-    service.list().then(documents => {
-      setDocuments(documents)
-    })
-  }, [service])
+    field.service.query().then(setDocuments)
+  }, [field.service])
 
   return (
     <Select
+      placeholder={`Select ${field.title}`}
       value={(value as string | undefined) ?? ''}
       onChange={e => onChange(ObjectId.createFromHexString(e.target.value))}
     >
@@ -39,7 +32,7 @@ const SelectRef: FC<SelectRefProps> = ({
           key={document._id.toHexString()}
           value={document._id.toHexString()}
         >
-          {document[displayFieldName]}
+          {document[field.displayFieldName]}
         </option>
       ))}
     </Select>
@@ -47,28 +40,23 @@ const SelectRef: FC<SelectRefProps> = ({
 }
 
 interface FieldEditorProps {
-  fieldDefinition: FieldDefinition
+  field: FieldDefinition
   value: Value | undefined
   onChange: (value: Value) => void
 }
 
 export const FieldEditor: FC<FieldEditorProps> = ({
-  fieldDefinition,
+  field,
   value,
   onChange
 }) => {
-  if (fieldDefinition.type === 'ref') {
+  if (field.type === 'ref') {
     return (
-      <SelectRef
-        service={fieldDefinition.service}
-        displayFieldName={fieldDefinition.displayFieldName}
-        value={value}
-        onChange={id => onChange(id)}
-      />
+      <SelectRef field={field} value={value} onChange={id => onChange(id)} />
     )
   }
 
-  if (fieldDefinition.type === 'string') {
+  if (field.type === 'string') {
     return (
       <Input
         type="text"
@@ -78,7 +66,7 @@ export const FieldEditor: FC<FieldEditorProps> = ({
     )
   }
 
-  if (fieldDefinition.type === 'number') {
+  if (field.type === 'number') {
     return (
       <Input
         type="number"
@@ -88,7 +76,7 @@ export const FieldEditor: FC<FieldEditorProps> = ({
     )
   }
 
-  if (fieldDefinition.type === 'date') {
+  if (field.type === 'date') {
     return (
       <Input
         type="date"

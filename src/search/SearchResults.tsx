@@ -1,24 +1,35 @@
 import { FC } from 'react'
 import { Match } from '../services/match.ts'
-import { Box, Table, Tbody, Td, Th, Thead, Tr } from '@chakra-ui/react'
+import {
+  Box,
+  IconButton,
+  Table,
+  Tbody,
+  Td,
+  Th,
+  Thead,
+  Tr
+} from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { router } from '../router.ts'
 import { CollectionValue } from '../CollectionValue.tsx'
 import { EventTitle } from './EventTitle.tsx'
-import { Services } from '../services/services.ts'
+import { useServices } from '../services/services.ts'
+import { EditIcon } from '@chakra-ui/icons'
+import { useStore } from '@tanstack/react-store'
+import { store } from '../main.tsx'
 
 interface SearchResultsProps {
   matches: Match[]
-  services: Services
 }
 
-export const SearchResults: FC<SearchResultsProps> = ({
-  matches,
-  services
-}) => {
+export const SearchResults: FC<SearchResultsProps> = ({ matches }) => {
   const show = (matchId: string) => {
     router.push('Match', { matchId })
   }
+
+  const services = useServices()
+  const signedIn = useStore(store, state => state.signedIn)
 
   return (
     <Box bg={gray}>
@@ -40,6 +51,11 @@ export const SearchResults: FC<SearchResultsProps> = ({
             <Th borderColor="gray.400" color={white}>
               Players
             </Th>
+            {signedIn && (
+              <Th borderColor="gray.400" color={white}>
+                Edit
+              </Th>
+            )}
           </Tr>
         </Thead>
         <Tbody>
@@ -58,11 +74,7 @@ export const SearchResults: FC<SearchResultsProps> = ({
                 />
               </Td>
               <Td borderColor="gray.600">
-                <EventTitle
-                  services={services}
-                  streamId={match.streamId}
-                  fieldName="title"
-                />
+                <EventTitle streamId={match.streamId} fieldName="title" />
               </Td>
               <Td borderColor="gray.600">
                 <CollectionValue
@@ -88,6 +100,21 @@ export const SearchResults: FC<SearchResultsProps> = ({
                   fieldName="fullName"
                 />
               </Td>
+              {signedIn && (
+                <Td borderColor="gray.600">
+                  <IconButton
+                    onClick={e => {
+                      e.stopPropagation()
+                      router.push('EditMatch', {
+                        matchId: match._id.toHexString()
+                      })
+                    }}
+                    colorScheme="blue"
+                    aria-label="Edit"
+                    icon={<EditIcon />}
+                  />
+                </Td>
+              )}
             </Tr>
           ))}
         </Tbody>
