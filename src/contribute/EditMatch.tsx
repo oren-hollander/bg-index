@@ -13,6 +13,7 @@ import { useServices } from '../services/services.ts'
 import { Stream } from '../services/stream.ts'
 import { Player } from '../services/player.ts'
 import { getGameEvents, getGames } from './export.ts'
+import { useToast } from '@chakra-ui/react'
 
 interface EditMatchProps {
   matchId: ObjectId
@@ -21,6 +22,7 @@ interface EditMatchProps {
 export const EditMatch: FC<EditMatchProps> = ({ matchId }) => {
   const playerRef = useRef<ReactPlayer>(null)
 
+  const [playing, setPlaying] = useState(false)
   const [events, setEvents] = useState<GameEvent[]>([])
   const [progress, setProgress] = useState(0)
 
@@ -35,6 +37,7 @@ export const EditMatch: FC<EditMatchProps> = ({ matchId }) => {
   const [stream, setStream] = useState<Stream>()
 
   const services = useServices()
+  const toast = useToast()
 
   useEffect(() => {
     const init = async () => {
@@ -65,6 +68,11 @@ export const EditMatch: FC<EditMatchProps> = ({ matchId }) => {
     setEvents(events => filter(e => e !== event, events))
   }
 
+  const transpose = (seconds: number) => {
+    playerRef.current?.seekTo(seconds, 'seconds')
+    setPlaying(true)
+  }
+
   const setClipProgress = (state: OnProgressProps) => {
     setProgress(state.playedSeconds)
   }
@@ -86,12 +94,20 @@ export const EditMatch: FC<EditMatchProps> = ({ matchId }) => {
         { _id: match._id },
         { $set: { games } }
       )
+
+      toast({
+        title: 'Match updated.',
+        status: 'success',
+        duration: 5000,
+        isClosable: true
+      })
     }
   }
 
   if (!match || !topPlayer || !bottomPlayer || !stream) {
     return <Box>Loading...</Box>
   }
+
   return (
     <Flex direction="row" bg={gray} h="100vh" w="100vw">
       <Box flex="3">
@@ -101,6 +117,7 @@ export const EditMatch: FC<EditMatchProps> = ({ matchId }) => {
             height="100vh"
             ref={playerRef}
             onProgress={setClipProgress}
+            playing={playing}
             url={stream.url}
             controls={true}
           />
@@ -117,11 +134,9 @@ export const EditMatch: FC<EditMatchProps> = ({ matchId }) => {
       >
         <Flex direction="column" height="100vh">
           <Box top="0" width="full" zIndex="sticky">
-            <Box mt={4}>
-              <Button colorScheme="blue" onClick={updateMatch}>
-                Update
-              </Button>
-            </Box>
+            <Button mt={4} colorScheme="blue" onClick={updateMatch}>
+              Update
+            </Button>
 
             <CaptureControls
               progress={progress}
@@ -141,6 +156,7 @@ export const EditMatch: FC<EditMatchProps> = ({ matchId }) => {
               topPlayerName={topPlayer.shortName}
               bottomPlayerName={bottomPlayer.shortName}
               deleteEvent={deleteEvent}
+              transpose={transpose}
             />
           </Box>
         </Flex>

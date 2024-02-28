@@ -10,7 +10,7 @@ import {
 } from '@chakra-ui/react'
 import { gray, white } from '../colors.ts'
 import { SmallCloseIcon } from '@chakra-ui/icons'
-import { GameEvent } from '../services/match.ts'
+import { GameEvent, timestampToSeconds } from '../services/match.ts'
 import { FC, ReactNode } from 'react'
 import { reverse } from 'lodash/fp'
 
@@ -28,13 +28,15 @@ interface EventListProps {
   topPlayerName: string
   bottomPlayerName: string
   deleteEvent(event: GameEvent): void
+  transpose(seconds: number): void
 }
 
 export const EventList: FC<EventListProps> = ({
   events,
   topPlayerName,
   bottomPlayerName,
-  deleteEvent
+  deleteEvent,
+  transpose
 }) => {
   const getPlayerName = (event: GameEvent) => {
     switch (event.kind) {
@@ -74,18 +76,26 @@ export const EventList: FC<EventListProps> = ({
         </Thead>
         <Tbody>
           {reverse(events).map((event, i) => (
-            <Tr key={`${event.kind}-${event.timestamp}`}>
+            <Tr
+              cursor="pointer"
+              key={`${event.kind}-${event.timestamp}`}
+              onClick={() => transpose(timestampToSeconds(event.timestamp))}
+            >
               <Cell isLast={isLast(events, i)}>{getPlayerName(event)}</Cell>
               <Cell isLast={isLast(events, i)}>{event.kind}</Cell>
               <Cell isLast={isLast(events, i)}>{event.timestamp}</Cell>
               <Cell isLast={isLast(events, i)}>
                 <IconButton
+                  cursor="pointer"
                   size="xxs"
                   variant="outline"
                   color="red.300"
                   aria-label="Remove"
                   icon={<SmallCloseIcon />}
-                  onClick={() => deleteEvent(event)}
+                  onClick={e => {
+                    e.stopPropagation()
+                    deleteEvent(event)
+                  }}
                 />
               </Cell>
             </Tr>
